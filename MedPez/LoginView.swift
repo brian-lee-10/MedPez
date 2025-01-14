@@ -1,10 +1,3 @@
-//
-//  LoginView.swift
-//  MedPez
-//
-//  Created by Brian Lee on 11/20/24.
-//
-
 import SwiftUI
 import FirebaseAuth
 
@@ -18,61 +11,78 @@ struct LoginView: View {
         if isLoggedIn {
             ContentView() // Redirect to main content
         } else {
-            VStack {
-                Text("Welcome to MedPez")
-                    .font(.largeTitle)
+            NavigationStack {
+                VStack {
+                    Spacer() // Push content down to center vertically
+
+                    VStack(spacing: 16) {
+                        Text("MedPez")
+                            .font(.largeTitle)
+                            .padding()
+
+                        TextField("Email", text: $email)
+                            .keyboardType(.emailAddress)
+                            .autocapitalization(.none)
+                            .padding()
+                            .background(Color(.systemGray6))
+                            .cornerRadius(8)
+
+                        SecureField("Password", text: $password)
+                            .padding()
+                            .background(Color(.systemGray6))
+                            .cornerRadius(8)
+
+                        if let errorMessage = errorMessage {
+                            Text(errorMessage)
+                                .foregroundColor(.red)
+                                .padding()
+                        }
+
+                        Button(action: {
+                            loginUser()
+                        }) {
+                            Text("Log In")
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.blue)
+                                .foregroundColor(.white)
+                                .cornerRadius(8)
+                        }
+
+                        Button(action: {
+                            registerUser()
+                        }) {
+                            Text("Register")
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.green)
+                                .foregroundColor(.white)
+                                .cornerRadius(8)
+                        }
+
+                        NavigationLink(destination: ForgotPasswordView()) {
+                            Text("Forgot Password?")
+                                .foregroundColor(.blue)
+                                .padding(.top)
+                        }
+                    }
                     .padding()
+                    .frame(maxWidth: 400) // Optional: Constrain the width of the VStack
+                    .multilineTextAlignment(.center)
 
-                TextField("Email", text: $email)
-                    .keyboardType(.emailAddress)
-                    .autocapitalization(.none)
-                    .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(8)
-
-                SecureField("Password", text: $password)
-                    .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(8)
-
-                if let errorMessage = errorMessage {
-                    Text(errorMessage)
-                        .foregroundColor(.red)
-                        .padding()
+                    Spacer() // Push content up to center vertically
                 }
-
-                Button(action: {
-                    loginUser()
-                }) {
-                    Text("Log In")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
-                }
-                .padding(.top)
-
-                Button(action: {
-                    registerUser()
-                }) {
-                    Text("Register")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.green)
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
-                }
-                .padding(.top)
             }
-            .padding()
+//            .onTapGesture { hideKeyboard() }
         }
+        
     }
+
 
     private func loginUser() {
         Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
             if let error = error {
-                errorMessage =  error.localizedDescription
+                errorMessage = error.localizedDescription
             } else {
                 isLoggedIn = true
             }
@@ -90,7 +100,8 @@ struct LoginView: View {
     }
 }
 
-
-#Preview {
-    LoginView()
-}
+//extension View {
+//    func hideKeyboard() {
+//        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+//    }
+//}

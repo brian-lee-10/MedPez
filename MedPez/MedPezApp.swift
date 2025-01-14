@@ -4,14 +4,15 @@
 //
 //  Created by Brian Lee on 11/19/24.
 //
+
 import SwiftUI
 import FirebaseCore
+import FirebaseAuth
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         FirebaseApp.configure()
-        print("Configured Firebase")
         return true
     }
 }
@@ -20,13 +21,29 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 struct MedPezApp: App {
     // Register app delegate for Firebase setup
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    
+    @State private var isUserLoggedIn = false
+
     var body: some Scene {
         WindowGroup {
             NavigationView {
-                LoginView()
+                if isUserLoggedIn {
+                    ContentView() // Main app screen
+                } else {
+                    LoginView() // Login screen
+                }
+            }
+            .onAppear {
+                checkAuthState()
             }
         }
     }
-}
 
+    private func checkAuthState() {
+        // Check if a user is already signed in
+        if Auth.auth().currentUser != nil {
+            isUserLoggedIn = true
+        } else {
+            isUserLoggedIn = false
+        }
+    }
+}

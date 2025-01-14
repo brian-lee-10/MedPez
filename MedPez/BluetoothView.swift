@@ -2,14 +2,23 @@ import SwiftUI
 import FirebaseAuth
 
 struct BluetoothView: View {
-//    @Environment(\.dismiss) var dismiss
+    @Environment(\.dismiss) var dismiss
     @State private var isLoggedOut = false // Track logout state
+    @State private var showLogoutAlert = false // Show confirmation alert
+    @State private var userEmail: String = "" // Store the user's email
 
     var body: some View {
         VStack {
             Text("Bluetooth View")
                 .font(.largeTitle)
                 .padding()
+
+            if !userEmail.isEmpty {
+                Text("Logged in as: \(userEmail)")
+                    .font(.body)
+                    .foregroundColor(.gray)
+                    .padding()
+            }
 
             Text("Manage your Bluetooth connections here.")
                 .font(.body)
@@ -20,7 +29,7 @@ struct BluetoothView: View {
             Spacer()
 
             Button(action: {
-                logoutUser()
+                showLogoutAlert = true
             }) {
                 Text("Log Out")
                     .frame(maxWidth: .infinity)
@@ -30,6 +39,14 @@ struct BluetoothView: View {
                     .cornerRadius(8)
             }
             .padding()
+            .alert("Log Out", isPresented: $showLogoutAlert) {
+                Button("Cancel", role: .cancel) {}
+                Button("Log Out", role: .destructive) {
+                    logoutUser()
+                }
+            } message: {
+                Text("Are you sure you want to log out?")
+            }
         }
         .padding()
 //        .toolbar {
@@ -45,6 +62,17 @@ struct BluetoothView: View {
 //        }
         .fullScreenCover(isPresented: $isLoggedOut) {
             LoginView() // Redirect to LoginView upon logout
+        }
+        .onAppear {
+            fetchUserEmail()
+        }
+    }
+
+    private func fetchUserEmail() {
+        if let user = Auth.auth().currentUser {
+            userEmail = user.email ?? "Unknown User"
+        } else {
+            userEmail = "Not logged in"
         }
     }
 
