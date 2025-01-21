@@ -28,7 +28,7 @@ struct MedPezApp: App {
         WindowGroup {
             NavigationView {
                 if isUserLoggedIn {
-                    ContentView() // Main app screen
+                    MainTabView() // Main app screen
                 } else {
                     LoginView() // Login screen
                 }
