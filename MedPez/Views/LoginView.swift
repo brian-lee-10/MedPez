@@ -9,7 +9,8 @@ struct LoginView: View {
 
     var body: some View {
         if isLoggedIn {
-            ContentView() // Redirect to main content
+            MainTabView()
+            //ContentView() // Redirect to main content
         } else {
             NavigationStack {
                 VStack {
@@ -48,36 +49,30 @@ struct LoginView: View {
                                 .foregroundColor(.white)
                                 .cornerRadius(8)
                         }
+                    }
+                    .padding()
+                    .frame(maxWidth: 400) // Constrain the width of the VStack
+                    .multilineTextAlignment(.center)
 
-                        Button(action: {
-                            registerUser()
-                        }) {
-                            Text("Register")
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.green)
-                                .foregroundColor(.white)
-                                .cornerRadius(8)
+                    Spacer() // Push content up to center vertically
+                    
+                    VStack{
+                        Text("New to MedPez?")
+                        NavigationLink(destination: RegisterView(isLoggedIn: $isLoggedIn)){
+                            Text("Create an Account")
                         }
-
+                        
                         NavigationLink(destination: ForgotPasswordView()) {
                             Text("Forgot Password?")
                                 .foregroundColor(.blue)
                                 .padding(.top)
                         }
                     }
-                    .padding()
-                    .frame(maxWidth: 400) // Optional: Constrain the width of the VStack
-                    .multilineTextAlignment(.center)
-
-                    Spacer() // Push content up to center vertically
+                    Spacer()
                 }
             }
-//            .onTapGesture { hideKeyboard() }
         }
-        
     }
-
 
     private func loginUser() {
         Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
@@ -88,20 +83,8 @@ struct LoginView: View {
             }
         }
     }
-
-    private func registerUser() {
-        Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
-            if let error = error {
-                errorMessage = error.localizedDescription
-            } else {
-                isLoggedIn = true
-            }
-        }
-    }
 }
 
-//extension View {
-//    func hideKeyboard() {
-//        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-//    }
-//}
+#Preview {
+    LoginView()
+}
