@@ -10,7 +10,6 @@ struct LoginView: View {
     var body: some View {
         if isLoggedIn {
             MainTabView()
-            //ContentView() // Redirect to main content
         } else {
             NavigationStack {
                 VStack {
@@ -85,6 +84,6 @@ struct LoginView: View {
     }
 }
 
-#Preview {
-    LoginView()
-}
+//#Preview {
+//    LoginView()
+//}
