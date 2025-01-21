@@ -10,24 +10,42 @@ import SwiftUI
 struct MainTabView: View {
     var body: some View {
         TabView {
+            // Home Tab
             ContentView()
                 .tabItem {
                     Image(systemName: "house.fill")
                     Text("Home")
                 }
 
+            // Log Tab
+            LogView()
+                .tabItem {
+                    Image(systemName: "list.bullet.rectangle")
+                    Text("Log")
+                }
+
+            // Add Medication Tab
+            AddMedicationView()
+                .tabItem {
+                    Image(systemName: "plus.circle.fill")
+                    Text("Add Medication")
+                }
+
+            // Settings Tab
+            BluetoothView()
+                .tabItem {
+                    Image(systemName: "gearshape.fill")
+                    Text("Settings")
+                }
+
+            // Profile Tab
             ProfileView()
                 .tabItem {
                     Image(systemName: "person.fill")
                     Text("Profile")
                 }
-
-            LogView()
-                .tabItem {
-                    Image(systemName: "pills.fill")
-                    Text("Medications")
-                }
         }
+        .accentColor(.blue) // Optional: Customize the active tab color
     }
 }
 
