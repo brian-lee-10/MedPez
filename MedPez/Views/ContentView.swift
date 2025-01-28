@@ -5,6 +5,7 @@
 //  Created by Brian Lee on 11/19/24.
 
 import SwiftUI
+import CoreBluetooth
 
 struct ContentView: View {
     var body: some View {
@@ -63,6 +64,6 @@ struct ContentView: View {
         }
 }
 
-//#Preview {
-//    ContentView()
-//}
+#Preview {
+    ContentView()
+}

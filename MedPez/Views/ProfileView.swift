@@ -1,9 +1,3 @@
-//
-//  ProfileView.swift
-//  MedPez
-//
-//  Created by Brian Lee on 1/14/25.
-//
 import SwiftUI
 import FirebaseAuth
 import FirebaseFirestore
@@ -11,6 +5,8 @@ import FirebaseFirestore
 struct ProfileView: View {
     @State private var name = ""
     @State private var email = ""
+    @State private var isLoggedOut = false
+    @State private var showLogoutAlert = false
 
     var body: some View {
         VStack(spacing: 16) {
@@ -28,9 +24,32 @@ struct ProfileView: View {
             .cornerRadius(8)
 
             Spacer()
+
+            Button(action: {
+                showLogoutAlert = true
+            }) {
+                Text("Log Out")
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.red)
+                    .foregroundColor(.white)
+                    .cornerRadius(8)
+            }
+            .padding()
+            .alert("Log Out", isPresented: $showLogoutAlert) {
+                Button("Cancel", role: .cancel) {}
+                Button("Log Out", role: .destructive) {
+                    logoutUser()
+                }
+            } message: {
+                Text("Are you sure you want to log out?")
+            }
         }
         .padding()
         .onAppear(perform: fetchProfileData)
+        .fullScreenCover(isPresented: $isLoggedOut) {
+            LoginView() // Redirect to LoginView upon logout
+        }
     }
 
     private func fetchProfileData() {
@@ -49,9 +68,17 @@ struct ProfileView: View {
             }
         }
     }
+
+    private func logoutUser() {
+        do {
+            try Auth.auth().signOut()
+            isLoggedOut = true
+        } catch let signOutError as NSError {
+            print("Error signing out: %@", signOutError.localizedDescription)
+        }
+    }
 }
 
-//
-//#Preview {
-//    ProfileView()
-//}
+#Preview {
+    ProfileView()
+}
