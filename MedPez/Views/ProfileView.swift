@@ -50,6 +50,7 @@ struct ProfileView: View {
         .fullScreenCover(isPresented: $isLoggedOut) {
             LoginView() // Redirect to LoginView upon logout
         }
+        
     }
 
     private func fetchProfileData() {
