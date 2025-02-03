@@ -14,12 +14,13 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     @Published var isSwitchedOn = false
     @Published var peripherals = [Peripheral]()
     @Published var connectedPeripheralUUID: UUID?
-    
+    @Published var connectedPeripheral: CBPeripheral?
+
     override init() {
         super.init()
         myCentral = CBCentralManager(delegate:self, queue: nil)
     }
-    
+
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         isSwitchedOn = central.state == .poweredOn
         if isSwitchedOn {
@@ -28,59 +29,46 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
             stopScanning()
         }
     }
-    
+
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi RSSI: NSNumber) {
         let newPeripheral = Peripheral(id: peripheral.identifier, name: peripheral.name ?? "Unknown", rssi: RSSI.intValue)
-        
-        if !peripherals.contains(where: {$0.id == newPeripheral.id}) {
-            DispatchQueue.main.async {
-                self.peripherals.append(newPeripheral)
-            }
+        if !peripherals.contains(where: { $0.id == newPeripheral.id }) {
+            peripherals.append(newPeripheral)
         }
     }
-    
-    
-    func startScanning() {
-        print("startScanning")
-        myCentral.scanForPeripherals(withServices: nil, options: nil)
-    }
-    
-    func stopScanning() {
-        print("stopScanning")
-        myCentral.stopScan()
-    }
-    
+
     func connect(to peripheral: Peripheral) {
-        guard let cbPeripheral = myCentral.retrievePeripherals(withIdentifiers: [peripheral.id]).first
-        else { // Retrieve the peripheral by its identifier
-            print("Peripheral not found for connection")
-            return
-        }
-        
-        connectedPeripheralUUID = cbPeripheral.identifier
-        cbPeripheral.delegate = self // Set self as the delegate of the peripheral
-        myCentral.connect (cbPeripheral, options: nil)
+        guard let cbPeripheral = myCentral.retrievePeripherals(withIdentifiers: [peripheral.id]).first else { return }
+        connectedPeripheralUUID = peripheral.id
+        connectedPeripheral = cbPeripheral
+        cbPeripheral.delegate = self
+        myCentral.connect(cbPeripheral, options: nil)
     }
-    
-    
+
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        print( "Connected to \(peripheral.name ?? "Unknown")") // Print a message to the console
+        print("Connected to \(peripheral.name ?? "Unknown")")
+        connectedPeripheralUUID = peripheral.identifier
+        connectedPeripheral = peripheral
         peripheral.discoverServices(nil)
     }
-    
+
     func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
-        print( "Failed to connect to \(peripheral.name ?? "Unknown"): \(error?.localizedDescription ?? "No error information")") // Print a message to the console
-        if peripheral.identifier == connectedPeripheralUUID {
-            connectedPeripheralUUID = nil
-        }
+        print("Failed to connect to \(peripheral.name ?? "Unknown"): \(error?.localizedDescription ?? "No error information")")
+        connectedPeripheralUUID = nil
+        connectedPeripheral = nil
     }
-    
-    // Delegate method called when a peripheral is disconnected
+
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
-        print( "Disconnected from \(peripheral.name ?? "Unknown")") // Print a message to the console
-        if peripheral.identifier == connectedPeripheralUUID { // Check if the disconnected peripheral is the connected one
-            connectedPeripheralUUID = nil // Clear the connected peripheral JUID
-        }
+        print("Disconnected from \(peripheral.name ?? "Unknown")")
+        connectedPeripheralUUID = nil
+        connectedPeripheral = nil
     }
-    
+
+    func startScanning() {
+        myCentral.scanForPeripherals(withServices: nil, options: nil)
+    }
+
+    func stopScanning() {
+        myCentral.stopScan()
+    }
 }
