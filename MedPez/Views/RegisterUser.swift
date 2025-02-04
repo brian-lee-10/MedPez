@@ -13,79 +13,53 @@ struct RegisterView: View {
     @State private var alertMessage = ""
 
     var body: some View {
-        VStack {
-            Text("Register")
-                .font(.largeTitle)
-                .padding()
+        NavigationStack {
+            VStack {
+                // Text("Register")
+                //     .font(.largeTitle)
+                //     .padding()
 
-            TextField("Name", text: $name)
-                .padding()
-                .background(Color.gray.opacity(0.2))
-                .cornerRadius(8)
-
-//            VStack(alignment: .leading) {
-//                Text("Age")
-//                    .font(.headline)
-//
-//                TextField("\(calculateAge(from: birthdate))", text: .constant(""))
-//                    .onTapGesture {
-//                        withAnimation {
-//                            showDatePicker.toggle()
-//                        }
-//                    }
-//                    .padding()
-//                    .background(Color.gray.opacity(0.2))
-//                    .cornerRadius(8)
-//                    .disabled(true) // Prevent manual input
-//
-//                if showDatePicker {
-//                    DatePicker(
-//                        "Select Birthdate",
-//                        selection: $birthdate,
-//                        displayedComponents: .date
-//                    )
-//                    .datePickerStyle(GraphicalDatePickerStyle())
-//                    .transition(.opacity) // Smooth appearance
-//                }
-//            }
-//            .padding(.bottom)
-
-            TextField("Email", text: $email)
-                .keyboardType(.emailAddress)
-                .autocapitalization(.none)
-                .padding()
-                .background(Color.gray.opacity(0.2))
-                .cornerRadius(8)
-
-            SecureField("Password", text: $password)
-                .padding()
-                .background(Color.gray.opacity(0.2))
-                .cornerRadius(8)
-
-            Button(action: registerUser) {
-                Text("Register")
-                    .frame(maxWidth: .infinity)
+                TextField("Name", text: $name)
                     .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
+                    .background(Color.gray.opacity(0.2))
                     .cornerRadius(8)
-            }
-            .padding(.top)
+                
+                DatePicker("Birthdate", selection: $birthdate, displayedComponents: .date)
+                    .padding()
+                    .background(Color.gray.opacity(0.2))
+                    .cornerRadius(8)
 
-            Spacer()
-        }
-        .padding()
-        .alert(isPresented: $showAlert) {
-            Alert(title: Text("Registration"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+                TextField("Email", text: $email)
+                    .keyboardType(.emailAddress)
+                    .autocapitalization(.none)
+                    .padding()
+                    .background(Color.gray.opacity(0.2))
+                    .cornerRadius(8)
+
+                SecureField("Password", text: $password)
+                    .padding()
+                    .background(Color.gray.opacity(0.2))
+                    .cornerRadius(8)
+
+                Button(action: registerUser) {
+                    Text("Register")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+                }
+                .padding(.top)
+
+                Spacer()
+            } 
+            .padding()
+            .alert(isPresented: $showAlert) {
+                Alert(title: Text("Registration"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+            }
+            .navigationTitle("Register")
         }
     }
-
-//    private func calculateAge(from birthdate: Date) -> Int {
-//        let calendar = Calendar.current
-//        let now = Date()
-//        let ageComponents = calendar.dateComponents([.year], from: birthdate, to: now)
-//        return ageComponents.year ?? 0
-//    }
 
     private func registerUser() {
         guard !name.isEmpty, !email.isEmpty, !password.isEmpty else {
@@ -106,7 +80,8 @@ struct RegisterView: View {
             let db = Firestore.firestore()
             db.collection("users").document(user.uid).setData([
                 "name": name,
-                "email": email
+                "email": email,
+                "birthdate": birthdateFormatter.string(from: birthdate)
             ]) { error in
                 if let error = error {
                     alertMessage = "Error saving user data: \(error.localizedDescription)"
@@ -117,6 +92,12 @@ struct RegisterView: View {
                 showAlert = true
             }
         }
+    }
+    
+    private var birthdateFormatter: DateFormatter {
+            let formatter = DateFormatter()
+            formatter.dateStyle = .medium
+            return formatter
     }
 
 }
