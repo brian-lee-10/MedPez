@@ -55,58 +55,7 @@ struct AddMedicationView: View {
                 }
             }
             .padding(.bottom, 16)
-            
-            // Repeat On Days
-//            VStack(alignment: .leading) {
-//                Text("Repeat on")
-//                HStack {
-//                    ForEach(["S", "M", "T", "W", "T", "F", "S"], id: \.self) { day in
-//                        Button(action: {
-//                            toggleDaySelection(day)
-//                        }) {
-//                            Text(day)
-//                                .frame(width: 32, height: 32)
-//                                .background(selectedDays.contains(day) ? Color.blue : Color(.systemGray6))
-//                                .foregroundColor(selectedDays.contains(day) ? .white : .black)
-//                                .cornerRadius(16)
-//                        }
-//                    }
-//                }
-//            }
-//            .padding(.bottom, 16)
-            
-            // Daily Schedule
-//            VStack(alignment: .leading) {
-//                Text("Daily Schedule")
-//                ForEach(dailySchedule, id: \.self) { time in
-//                    HStack {
-//                        Text(formatTime(time))
-//                            .padding()
-//                            .background(Color.green)
-//                            .cornerRadius(8)
-//                            .foregroundColor(.white)
-//                        
-//                        Spacer()
-//                        Button(action: {
-//                            // Add alarm or notification logic
-//                        }) {
-//                            Image(systemName: "bell.fill")
-//                                .foregroundColor(.blue)
-//                        }
-//                    }
-//                }
-//                .padding(.bottom, 8)
-//                
-//                Button(action: {
-//                    addNewTime()
-//                }) {
-//                    HStack {
-//                        Image(systemName: "plus.circle.fill")
-//                        Text("Add Time")
-//                    }
-//                }
-//            }
-//            .padding(.bottom, 16)
+
             
             // Notes
             TextField("Notes", text: $notes)
@@ -152,23 +101,6 @@ struct AddMedicationView: View {
     
     // MARK: - Helper Functions
     
-    private func toggleDaySelection(_ day: String) {
-        if let index = selectedDays.firstIndex(of: day) {
-            selectedDays.remove(at: index)
-        } else {
-            selectedDays.append(day)
-        }
-    }
-    
-    private func addNewTime() {
-        dailySchedule.append(Date()) // Default to current time, let user edit
-    }
-    
-    private func formatTime(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.timeStyle = .short
-        return formatter.string(from: date)
-    }
     
     private func validateAndSaveMedication() {
         if medicationName.isEmpty {
@@ -188,18 +120,7 @@ struct AddMedicationView: View {
             showErrorAlert = true
             return
         }
-        
-//        if selectedDays.isEmpty {
-//            errorMessage = "Please select at least one day."
-//            showErrorAlert = true
-//            return
-//        }
-//        
-//        if dailySchedule.isEmpty {
-//            errorMessage = "Please add at least one schedule time."
-//            showErrorAlert = true
-//            return
-//        }
+
         
         saveMedication()
     }
