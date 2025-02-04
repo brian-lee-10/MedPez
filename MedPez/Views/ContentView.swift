@@ -36,32 +36,26 @@ struct ContentView: View {
                     }
                 }
                 .padding()
-                
-                Text(getCurrentDayAndDate())
-                                .font(.headline)
-                                .padding(.top, 16)
-                                .padding(.bottom, 8)
-                            
-                
                 Spacer()
                 
-                VStack {
-                    Text("MedPez")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .padding()
-                }
+                // VStack {
+                //     Text("MedPez")
+                //         .font(.largeTitle)
+                //         .fontWeight(.bold)
+                //         .padding()
+                // }
                 
-                Spacer()
+
             }
+            .navigationTitle(getCurrentDayAndDate())
         }
     }
     
     private func getCurrentDayAndDate() -> String {
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "EEEE, MMMM d, yyyy" // Example: "Monday, January 14, 2025"
-            return dateFormatter.string(from: Date())
-        }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE, MMM d" // Example: "Tuesday, Nov 19"
+        return formatter.string(from: Date())
+    }
 }
 
 #Preview {
