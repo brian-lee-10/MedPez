@@ -45,6 +45,11 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
         myCentral.connect(cbPeripheral, options: nil)
     }
 
+    func disconnect() {
+        guard let connectedPeripheral = connectedPeripheral else { return }
+        myCentral.cancelPeripheralConnection(connectedPeripheral)
+    }
+
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         print("Connected to \(peripheral.name ?? "Unknown")")
         connectedPeripheralUUID = peripheral.identifier
