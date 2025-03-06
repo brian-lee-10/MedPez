@@ -16,6 +16,8 @@ struct MainTabView: View {
                     Image(systemName: "house.fill")
                     Text("Home")
                 }
+                .background(.BG)
+                .preferredColorScheme(.light)
 
             // Log Tab
             LogView()
@@ -23,13 +25,15 @@ struct MainTabView: View {
                     Image(systemName: "list.bullet.rectangle")
                     Text("Log")
                 }
+                .background(.BG)
+                .preferredColorScheme(.light)
 
             // Add Medication Tab
-            AddMedicationView()
-                .tabItem {
-                    Image(systemName: "plus.circle.fill")
-                    Text("Add Medication")
-                }
+//            AddMedicationView()
+//                .tabItem {
+//                    Image(systemName: "plus.circle.fill")
+//                    Text("Add Medication")
+//                }
 
             // Settings Tab
             BluetoothView()
@@ -37,6 +41,8 @@ struct MainTabView: View {
                     Image(systemName: "gearshape.fill")
                     Text("Settings")
                 }
+                .background(.BG)
+                .preferredColorScheme(.light)
 
             // Profile Tab
             ProfileView()
@@ -44,8 +50,11 @@ struct MainTabView: View {
                     Image(systemName: "person.fill")
                     Text("Profile")
                 }
+                .background(.BG)
+                .preferredColorScheme(.light)
         }
-        .accentColor(.blue) // Optional: Customize the active tab color
+        .modelContainer(for: Task.self)
+        .accentColor(.blue)
     }
 }
 

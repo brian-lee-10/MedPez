@@ -14,22 +14,25 @@ struct ProfileView: View {
     var body: some View {
         VStack(spacing: 16) {
             Text("Profile")
-                .font(.largeTitle)
+                .font(.custom("OpenSans-Bold", size: 34))
                 .padding()
 
             VStack(alignment: .leading, spacing: 8) {
                 TextField("Name", text: $name)
+                    .font(.custom("OpenSans-Regular", size: 17))
                     .padding()
                     .background(Color.gray.opacity(0.2))
                     .cornerRadius(8)
 
                 TextField("Email", text: $email)
+                    .font(.custom("OpenSans-Regular", size: 17))
                     .padding()
                     .background(Color.gray.opacity(0.2))
                     .cornerRadius(8)
                     .disabled(true) // Disable editing email
 
                 DatePicker("Birthdate", selection: $birthdate, displayedComponents: .date)
+                    .font(.custom("OpenSans-Regular", size: 17))
                     .padding()
                     .background(Color.gray.opacity(0.2))
                     .cornerRadius(8)
@@ -46,6 +49,7 @@ struct ProfileView: View {
                 saveProfile()
             }) {
                 Text("Save")
+                    .font(.custom("OpenSans-Regular", size: 17))
                     .frame(maxWidth: .infinity)
                     .padding()
                     .background(Color.blue)
