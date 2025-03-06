@@ -14,13 +14,16 @@ class Task: Identifiable {
     var creationDate: Date
     var isCompleted: Bool
     var tint: String
+    var dosage: String
+    // var frequency: String
     
-    init(id: UUID = .init(), taskTitle: String, creationDate: Date = .init(), isCompleted: Bool = false, tint: String) {
+    init(id: UUID = .init(), taskTitle: String, creationDate: Date = .init(), isCompleted: Bool = false, tint: String, dosage: String) {
         self.id = id
         self.taskTitle = taskTitle
         self.creationDate = creationDate
         self.isCompleted = isCompleted
         self.tint = tint
+        self.dosage = dosage
     }
     
     var tintColor: Color {
@@ -34,13 +37,6 @@ class Task: Identifiable {
         }
     }
 }
-
-//var sampleTasks: [Task] = [
-//    .init(taskTitle: "Med #1", creationDate: .updateHour(-1), isCompleted: true, tint: .taskColor1),
-//    .init(taskTitle: "Med #2", creationDate: .updateHour(0), tint: .taskColor2),
-//    .init(taskTitle: "Med #3", creationDate: .updateHour(5), tint: .taskColor3),
-//    .init(taskTitle: "Med #4", creationDate: .updateHour(10), tint: .taskColor4),
-//]
 
 extension Date {
     static func updateHour(_ value: Int) -> Date {
