@@ -14,101 +14,82 @@ struct RegisterView: View {
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
-        ZStack {
-            // Background Gradient
-            LinearGradient(gradient: Gradient(colors: [Color.black, Color.purple]), startPoint: .top, endPoint: .bottom)
-                .edgesIgnoringSafeArea(.all)
+        VStack(spacing: 20) {
+            Spacer()
             
-            VStack(spacing: 5) {
-                Spacer()
-                // Logo & Title
-                HStack {
-                    Image(systemName: "circle.grid.3x3.fill")
-                        .resizable()
-                        .frame(width: 60, height: 60)
-                        .foregroundColor(.white)
-                    Text("MedPez")
-                        .font(.largeTitle)
-                        .bold()
-                        .foregroundColor(.white)
-                }
-                .padding(.bottom, 10)
-                
-                Text("Get Started")
-                    .font(.title)
-                    .bold()
-                    .foregroundColor(.white)
-                
-                Text("Create your account below.")
-                    .foregroundColor(.white)
-                    .padding(.vertical, 3)
-                
-                // Name Field
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("Full Name")
-                        .foregroundColor(.white)
-                    TextField("Enter your full name...", text: $name)
-                        .padding()
-                        .background(Color.white.opacity(0.2))
-                        .cornerRadius(8)
-                        .foregroundColor(.white)
-                }
-                
-                // Birthdate Picker
-//                VStack(alignment: .leading, spacing: 5) {
-//                    Text("Birthdate")
-//                        .foregroundColor(.white)
-//                    DatePicker("Birthdate", selection: $birthdate, displayedComponents: .date)
-//                        .datePickerStyle(CompactDatePickerStyle())
-//                        .padding()
-//                        .background(Color.white.opacity(0.2))
-//                        .cornerRadius(8)
-//                        .foregroundColor(.white)
-//                }
-                
-                // Email Field
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("Email Address")
-                        .foregroundColor(.white)
-                    TextField("Enter your email...", text: $email)
-                        .keyboardType(.emailAddress)
-                        .autocapitalization(.none)
-                        .padding()
-                        .background(Color.white.opacity(0.2))
-                        .cornerRadius(8)
-                        .foregroundColor(.white)
-                }
-                
-                // Password Field
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("Password")
-                        .foregroundColor(.white)
-                    SecureField("Enter your password...", text: $password)
-                        .padding()
-                        .background(Color.white.opacity(0.2))
-                        .cornerRadius(8)
-                        .foregroundColor(.white)
-                }
-                
-                // Register Button
-                HStack {
-                    Spacer()
-                    Button(action: { registerUser() }) {
-                        Text("Create Account")
-                            .padding(.horizontal, 37)
-                            .padding(.vertical, 20)
-                            .background(Color.white)
-                            .foregroundColor(.black)
-                            .cornerRadius(30)
-                    }
-                }
-                .padding(.top, 10)
-                Spacer()
+            Text("Get Started")
+                .font(.custom("OpenSans-Bold", size: 30))
+            
+            Text("Create your account below.")
+                .font(.custom("OpenSans-Regular", size: 17))
+                .padding(.vertical, 3)
+            
+            // Name Field
+            VStack(alignment: .leading, spacing: 5) {
+                Text("Full Name")
+                    .font(.custom("OpenSans-Bold", size: 17))
+                TextField("Enter your full name...", text: $name)
+                    .font(.custom("OpenSans-Regular", size: 17))
+                    .padding()
+                    .cornerRadius(8)
+                    .background(Color.white)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.gray, lineWidth: 1) // Grey border
+                    )
+                    
             }
-            .padding(.horizontal, 30)
-            .alert(isPresented: $showAlert) {
-                Alert(title: Text("Registration"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+            
+            // Email Field
+            VStack(alignment: .leading, spacing: 5) {
+                Text("Email Address")
+                    .font(.custom("OpenSans-Bold", size: 17))
+                TextField("Enter your email...", text: $email)
+                    .font(.custom("OpenSans-Regular", size: 17))
+                    .keyboardType(.emailAddress)
+                    .autocapitalization(.none)
+                    .padding()
+                    .cornerRadius(8)
+                    .background(Color.white)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.gray, lineWidth: 1) // Grey border
+                    )
             }
+            
+            // Password Field
+            VStack(alignment: .leading, spacing: 5) {
+                Text("Password")
+                    .font(.custom("OpenSans-Bold", size: 17))
+                SecureField("Enter your password...", text: $password)
+                    .font(.custom("OpenSans-Regular", size: 17))
+                    .padding()
+                    .cornerRadius(8)
+                    .background(Color.white)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.gray, lineWidth: 1) // Grey border
+                    )
+            }
+            
+            // Register Button
+            Button(action: { registerUser() }) {
+                Text("Create Account")
+                    .font(.custom("OpenSans-Bold", size: 20))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 20)
+                    .background(Color.purple)
+                    .foregroundColor(.white)
+                    .cornerRadius(30)
+            }
+            .padding(.top, 10)
+            Spacer()
+        }
+        .padding(.horizontal, 30)
+        .background(.BG)
+        .preferredColorScheme(.light)
+        .alert(isPresented: $showAlert) {
+            Alert(title: Text("Registration"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
         }
         .navigationBarBackButtonHidden(true)
         .navigationBarItems(leading: Button(action: {
@@ -116,9 +97,9 @@ struct RegisterView: View {
         }) {
             HStack {
                 Image(systemName: "chevron.left")
-                    .foregroundColor(.white) // Custom back button color
+                    .foregroundColor(.blue) // Custom back button color
                 Text("Login")
-                    .foregroundColor(.white) // Custom back button color
+                    .foregroundColor(.blue) // Custom back button color
             }
         })
     }
@@ -143,7 +124,6 @@ struct RegisterView: View {
             db.collection("users").document(user.uid).setData([
                 "name": name,
                 "email": email,
-                "birthdate": birthdateFormatter.string(from: birthdate)
             ]) { error in
                 if let error = error {
                     alertMessage = "Error saving user data: \(error.localizedDescription)"
@@ -154,12 +134,6 @@ struct RegisterView: View {
                 showAlert = true
             }
         }
-    }
-    
-    private var birthdateFormatter: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        return formatter
     }
 }
 
