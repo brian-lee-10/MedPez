@@ -9,50 +9,62 @@ struct ForgotPasswordView: View {
     @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
-        ZStack {
-            LinearGradient(gradient: Gradient(colors: [Color.black, Color.purple.opacity(0.8)]), startPoint: .top, endPoint: .bottom)
-                .edgesIgnoringSafeArea(.all)
+        VStack(spacing: 20) {
+            HStack {
+                Image(systemName: "pill")
+                    .resizable()
+                    .frame(width: 40, height: 40)
+                    .foregroundColor(.white)
+                    .offset(y: 20)
+                
+                Text("MedPez")
+                    .font(.custom("OpenSans-Bold", size: 30))
+                    .foregroundColor(.white)
+                    .offset(y: 20)
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 130)
+            .background(Color.purple) 
+            .edgesIgnoringSafeArea(.top)
             
-            VStack {
-                Text("Change Password")
-                    .font(.title)
-                    .bold()
-                    .foregroundColor(.white)
-
-                Text("Enter the email associated with your account and we will send you link to reset your password.")
-                    .font(.body)
-                    .foregroundColor(.white)
+            Text("Change Password")
+                .font(.custom("OpenSans-Bold", size: 30))
+            
+            Text("Enter the email associated with your account and we will send you link to reset your password.")
+                .font(.custom("OpenSans-Regular", size: 17))
+                .padding(.horizontal, 30)
+            
+            VStack(alignment: .leading, spacing: 5) {
+                Text("Email Address")
+                    .font(.custom("OpenSans-Bold", size: 17))
+                TextField("Enter your email...", text: $email)
+                    .keyboardType(.emailAddress)
+                    .autocapitalization(.none)
                     .padding()
-                
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("Email Address")
-                        .foregroundColor(.white)
-                    TextField("Enter your email...", text: $email)
-                        .keyboardType(.emailAddress)
-                        .autocapitalization(.none)
-                        .padding()
-                        .background(Color.white.opacity(0.2))
-                        .cornerRadius(8)
-                        .foregroundColor(.white)
-                }
-                
-
-                Button(action: resetPassword) {
-                    Text("Send Reset Email")                    
-                        .padding(.horizontal, 37)
-                        .padding(.vertical, 20)
-                        .background(Color.white)
-                        .foregroundColor(.black)
-                        .cornerRadius(30)
-                }
-                .padding(.top)
-
-                Spacer()
+                    .background(Color.white)
+                    .cornerRadius(8)
+                    .font(.custom("OpenSans-Regular", size: 17))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.gray, lineWidth: 1) // Grey border
+                    )
             }
-            .padding()
-            .alert(isPresented: $showAlert) {
-                Alert(title: Text("Password Reset"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
+            .padding(.horizontal, 30)
+            
+            
+            Button(action: resetPassword) {
+                Text("Send Reset Email")
+                    .font(.custom("OpenSans-Bold", size: 20))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 20)
+                    .background(Color.purple)
+                    .foregroundColor(.white)
+                    .cornerRadius(30)
             }
+            .padding(.top)
+            .padding(.horizontal, 30)
+            
+            Spacer()
         }
         .navigationBarBackButtonHidden(true)
         .navigationBarItems(leading: Button(action: {
@@ -60,11 +72,20 @@ struct ForgotPasswordView: View {
         }) {
             HStack {
                 Image(systemName: "chevron.left")
-                    .foregroundColor(.teal) // Custom back button color
+                    .foregroundColor(.white)
                 Text("Back")
-                    .foregroundColor(.teal) // Custom back button color
+                    .foregroundColor(.white)
             }
         })
+        .alert(isPresented: $showAlert) {
+            Alert(title: Text("Password Reset"), message: Text(alertMessage), dismissButton: .default(Text("OK")){
+                if alertMessage == "Password reset email sent! Check your inbox." {
+                    presentationMode.wrappedValue.dismiss()  // <-- Go back to LoginView
+                }
+            })
+        }
+        .background(.BG)
+        .preferredColorScheme(.light)
     }
 
     private func resetPassword() {
