@@ -5,7 +5,6 @@ import FirebaseFirestore
 struct ProfileView: View {
     @State private var name = ""
     @State private var email = ""
-    @State private var birthdate = Date()
     @State private var isLoggedOut = false
     @State private var showLogoutAlert = false
     @State private var showSaveAlert = false
@@ -30,12 +29,6 @@ struct ProfileView: View {
                     .background(Color.gray.opacity(0.2))
                     .cornerRadius(8)
                     .disabled(true) // Disable editing email
-
-                DatePicker("Birthdate", selection: $birthdate, displayedComponents: .date)
-                    .font(.custom("OpenSans-Regular", size: 17))
-                    .padding()
-                    .background(Color.gray.opacity(0.2))
-                    .cornerRadius(8)
             }
             .padding()
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -98,9 +91,6 @@ struct ProfileView: View {
                 let data = document.data()
                 self.name = data?["name"] as? String ?? ""
                 self.email = data?["email"] as? String ?? ""
-                if let birthdateTimestamp = data?["birthdate"] as? Timestamp {
-                    self.birthdate = birthdateTimestamp.dateValue()
-                }
             } else {
                 print("Document does not exist")
             }
@@ -111,8 +101,7 @@ struct ProfileView: View {
         guard let user = Auth.auth().currentUser else { return }
         let db = Firestore.firestore()
         db.collection("users").document(user.uid).updateData([
-            "name": name,
-            "birthdate": Timestamp(date: birthdate)
+            "name": name
         ]) { error in
             if let error = error {
                 alertMessage = "Error saving profile: \(error.localizedDescription)"
