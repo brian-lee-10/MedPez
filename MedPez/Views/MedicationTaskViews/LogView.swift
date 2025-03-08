@@ -64,7 +64,7 @@ struct LogView: View {
         })
         .sheet(isPresented: $createNewTask, content: {
             NewTaskView()
-                .presentationDetents([.height(300)])
+                .presentationDetents([.height(410)])
                 .interactiveDismissDisabled()
                 .presentationCornerRadius(30)
                 .presentationBackground(.BG)

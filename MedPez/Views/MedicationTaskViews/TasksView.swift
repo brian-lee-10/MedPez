@@ -46,9 +46,9 @@ struct TasksView: View {
         .overlay {
             if tasks.isEmpty {
                 Text("No Medication Scheduled")
-                    .font(.custom("OpenSans-Bold", size:20))
+                    .font(.custom("OpenSans-Bold", size:16))
                     .foregroundStyle(.black)
-                    .frame(width: 300)
+                    .frame(width: 250)
             }
         }
     }

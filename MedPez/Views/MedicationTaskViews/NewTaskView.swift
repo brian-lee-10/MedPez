@@ -15,8 +15,7 @@ struct NewTaskView: View {
     @State private var taskTitle: String = ""
     @State private var taskDate: Date = .init()
     @State private var taskColor: String = "TaskColor 1"
-    @State private var dosage: String = ""
-    @State private var unit: String = "mg"
+   //  @State private var dosageNum: String = ""
     var body: some View {
         VStack(alignment: .leading, spacing: 15, content: {
             Button(action: {
@@ -42,21 +41,21 @@ struct NewTaskView: View {
             .padding(.top, 5)
             
             /// Dosage and Frequency Fields
-            HStack(spacing: 12) {
-                VStack(alignment: .leading, spacing: 8, content: {
-                    Text("Dosage")
-                        .font(.custom("OpenSans-Bold", size:16))
-                        .foregroundStyle(.black)
-                    
-                    TextField("Enter Dosage...", text: $dosage)
-                        .keyboardType(.decimalPad)
-                        .padding(.vertical, 12)
-                        .padding(.horizontal, 15)
-                        .background(.white.shadow(.drop(color: .black.opacity(0.25), radius: 2)), in: .rect(cornerRadius: 10))
-                })
-                /// Giving Some Space for tapping
-                .padding(.trailing, -15)
-            }
+//            HStack(spacing: 12) {
+//                VStack(alignment: .leading, spacing: 8, content: {
+//                    Text("Dosage")
+//                        .font(.custom("OpenSans-Bold", size:16))
+//                        .foregroundStyle(.black)
+//                    
+//                    TextField("Enter Dosage...", text: $dosageNum)
+//                        .keyboardType(.decimalPad)
+//                        .padding(.vertical, 12)
+//                        .padding(.horizontal, 15)
+//                        .background(.white.shadow(.drop(color: .black.opacity(0.25), radius: 2)), in: .rect(cornerRadius: 10))
+//                })
+//                /// Giving Some Space for tapping
+//                .padding(.trailing, -15)
+//            }
             
             /// Date and Task Color
             HStack(spacing: 12) {
@@ -109,7 +108,7 @@ struct NewTaskView: View {
             
             Button(action: {
                 /// Saving Data
-                let task = Task(taskTitle: taskTitle, creationDate: taskDate, tint: taskColor, dosage: dosage)
+                let task = Task(taskTitle: taskTitle, creationDate: taskDate, tint: taskColor)
                 do {
                     context.insert(task)
                     try context.save()

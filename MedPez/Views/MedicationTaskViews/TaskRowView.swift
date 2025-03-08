@@ -30,31 +30,52 @@ struct TaskRowView: View {
                         }
                 }
             
-            VStack(alignment: .leading, spacing: 8, content: {
-                Text(task.taskTitle)
-                    .font(.custom("OpenSans-Bold", size: 18))
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.black)
+            VStack {
+                HStack {
+                    VStack(alignment: .leading, spacing: 8, content: {
+                        /// Task Title
+                        Text(task.taskTitle)
+                            .font(.custom("OpenSans-Bold", size: 18))
+                            .foregroundStyle(.black)
+                            .overlay(
+                                task.isCompleted ? AnyView(
+                                    Rectangle()
+                                        .fill(Color.black)
+                                        .frame(height: 3)
+                                        .offset(y: 0)
+                                ) : AnyView(EmptyView())
+                            )
                     
-                
-                Label(task.creationDate.format("hh:mm a"), systemImage: "clock")
-                    .font(.custom("OpenSans-Regular", size: 11))
-                    .foregroundStyle(.black)
-            })
+                        /// Date Label
+                        Label(task.creationDate.format("hh:mm a"), systemImage: "clock")
+                            .font(.custom("OpenSans-Bold", size: 12))
+                            .foregroundStyle(.black)
+                            .overlay(
+                                task.isCompleted ? AnyView(
+                                    Rectangle()
+                                        .fill(Color.black)
+                                        .frame(height: 3)
+                                        .offset(y: 0)
+                                ) : AnyView(EmptyView())
+                            )
+                        
+                    })
+                    Spacer()
+                    Button(action: {
+                        context.delete(task)
+                        try? context.save()
+                    }) {
+                        Image(systemName: "trash")
+                            .foregroundStyle(.red)
+                            .padding()
+                            .background(Color.white.shadow(.drop(color: .black.opacity(0.1), radius: 3)), in: .circle)
+                    }
+                }
+            }
             .padding(15)
             .hSpacing(.leading)
             .background(task.tintColor, in: .rect(topLeadingRadius: 15, bottomLeadingRadius: 15))
-            .strikethrough(task.isCompleted, pattern: .solid, color: .black)
-            .contentShape(.contextMenuPreview, .rect(cornerRadius: 15))
-            .contextMenu {
-                Button("Delete Medication", role: .destructive){
-                    /// Delete Medication
-                    context.delete(task)
-                    try? context.save()
-                }
-            }
             .offset(y: -8)
-            
         }
         .hSpacing(.leading)
     }
@@ -63,7 +84,6 @@ struct TaskRowView: View {
         if task.isCompleted {
             return .green
         }
-        
         return task.creationDate.isSameHour ? .darkBlue : (task.creationDate.isPast ? .red : .black)
     }
 }
