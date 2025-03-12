@@ -3,84 +3,97 @@ import FirebaseAuth
 import FirebaseFirestore
 
 struct ProfileView: View {
-    @State private var name = ""
-    @State private var email = ""
+    @State private var name = "NAME"
+    @State private var email = "EMAIL"
     @State private var isLoggedOut = false
     @State private var showLogoutAlert = false
-    @State private var showSaveAlert = false
-    @State private var alertMessage = ""
 
     var body: some View {
-        VStack(spacing: 16) {
-            Text("Profile")
-                .font(.custom("OpenSans-Bold", size: 34))
-                .padding()
-
-            VStack(alignment: .leading, spacing: 8) {
-                TextField("Name", text: $name)
-                    .font(.custom("OpenSans-Regular", size: 17))
-                    .padding()
-                    .background(Color.gray.opacity(0.2))
-                    .cornerRadius(8)
-
-                TextField("Email", text: $email)
-                    .font(.custom("OpenSans-Regular", size: 17))
-                    .padding()
-                    .background(Color.gray.opacity(0.2))
-                    .cornerRadius(8)
-                    .disabled(true) // Disable editing email
+        VStack {
+            // Profile Header
+            VStack {
+                Text("Profile")
+                    .font(.custom("OpenSans-Bold", size:28))
+                    .padding(.top, 10)
+                
+                Image(systemName: "person.crop.circle.fill")
+                    .resizable()
+                    .frame(width: 80, height: 80)
+                    .clipShape(Circle())
+                    .padding(.top, 10)
+                
+                Text(name)
+                    .font(.custom("OpenSans-Bold", size:20))
+                    .padding(.top, 5)
+                
+                Text(email)
+                    .foregroundColor(.gray)
+                    .font(.custom("OpenSans-Regular", size:16))
+                    .padding(.bottom, 10)
+                
+                Button(action: {
+                    // Edit profile action
+                }) {
+                    Text("Edit Profile")
+                        .font(.custom("OpenSans-Bold", size:20))
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.black)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+                }
+                .padding(.horizontal, 40)
             }
-            .padding()
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color.gray.opacity(0.2))
-            .cornerRadius(8)
-
-            Spacer()
-
-
-            Button(action: {
-                saveProfile()
-            }) {
-                Text("Save")
-                    .font(.custom("OpenSans-Regular", size: 17))
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
-            }
-            .padding()
-            .alert(isPresented: $showSaveAlert) {
-                Alert(title: Text("Profile"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
-            }
-
-            Button(action: {
-                showLogoutAlert = true
-            }) {
-                Text("Log Out")
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.red)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
-            }
-            .padding()
-            .alert("Log Out", isPresented: $showLogoutAlert) {
-                Button("Cancel", role: .cancel) {}
-                Button("Log Out", role: .destructive) {
-                    logoutUser()
+            .padding(.bottom, 20)
+            
+            // Options List
+            List {
+                Section {
+                    NavigationLink(destination: ContentView()) {
+                        Label("Settings", systemImage: "gear")
+                            .font(.custom("OpenSans-Regular", size:18))
+                    }
+                    NavigationLink(destination: ContentView()) {
+                        Label("Change Password", systemImage: "lock")
+                            .font(.custom("OpenSans-Regular", size:18))
+                    }
+                }
+                
+                Section {
+                    NavigationLink(destination: ContentView()) {
+                        Label("Help & Support", systemImage: "questionmark.circle")
+                            .font(.custom("OpenSans-Regular", size:18))
+                    }
+                }
+                
+                Section {
+                    Button(action: {
+                        showLogoutAlert = true
+                    }) {
+                        Label("Log Out", systemImage: "arrow.right.square")
+                            .foregroundColor(.red)
+                            .font(.custom("OpenSans-Regular", size:18))
+                    }
                 }
             }
+            .listStyle(InsetGroupedListStyle())
+            
+            Spacer()
         }
-        .padding()
         .onAppear {
             loadProfile()
         }
+        .alert("Log Out", isPresented: $showLogoutAlert) {
+            Button("Cancel", role: .cancel) {}
+            Button("Log Out", role: .destructive) {
+                logoutUser()
+            }
+        }
         .fullScreenCover(isPresented: $isLoggedOut) {
-            LoginView() // Redirect to LoginView upon logout
+            LoginView()
         }
     }
-
+    
     private func loadProfile() {
         guard let user = Auth.auth().currentUser else { return }
         let db = Firestore.firestore()
@@ -89,26 +102,13 @@ struct ProfileView: View {
         docRef.getDocument { document, error in
             if let document = document, document.exists {
                 let data = document.data()
-                self.name = data?["name"] as? String ?? ""
-                self.email = data?["email"] as? String ?? ""
+                DispatchQueue.main.async {
+                    self.name = data?["name"] as? String ?? "Unknown"
+                    self.email = data?["email"] as? String ?? "Unknown"
+                }
             } else {
                 print("Document does not exist")
             }
-        }
-    }
-
-    private func saveProfile() {
-        guard let user = Auth.auth().currentUser else { return }
-        let db = Firestore.firestore()
-        db.collection("users").document(user.uid).updateData([
-            "name": name
-        ]) { error in
-            if let error = error {
-                alertMessage = "Error saving profile: \(error.localizedDescription)"
-            } else {
-                alertMessage = "Profile updated successfully!"
-            }
-            showSaveAlert = true
         }
     }
 
@@ -116,12 +116,15 @@ struct ProfileView: View {
         do {
             try Auth.auth().signOut()
             isLoggedOut = true
-        } catch let signOutError as NSError {
-            print("Error signing out: %@", signOutError.localizedDescription)
+        } catch let error {
+            print("Error signing out: \(error.localizedDescription)")
         }
     }
 }
 
-#Preview {
-    ProfileView()
+// Preview
+struct ProfileView_Previews: PreviewProvider {
+    static var previews: some View {
+        ProfileView()
+    }
 }
