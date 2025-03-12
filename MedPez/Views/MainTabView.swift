@@ -18,22 +18,17 @@ struct MainTabView: View {
                 }
                 .background(.BG)
                 .preferredColorScheme(.light)
+                .navigationBarHidden(true)
 
             // Log Tab
             LogView()
                 .tabItem {
-                    Image(systemName: "list.bullet.rectangle")
-                    Text("Log")
+                    Image(systemName: "calendar")
+                    Text("Calendar")
                 }
                 .background(.BG)
                 .preferredColorScheme(.light)
-
-            // Add Medication Tab
-//            AddMedicationView()
-//                .tabItem {
-//                    Image(systemName: "plus.circle.fill")
-//                    Text("Add Medication")
-//                }
+                .navigationBarHidden(true)
 
             // Settings Tab
             BluetoothView()
@@ -43,6 +38,7 @@ struct MainTabView: View {
                 }
                 .background(.BG)
                 .preferredColorScheme(.light)
+                .navigationBarHidden(true)
 
             // Profile Tab
             ProfileView()
@@ -52,9 +48,12 @@ struct MainTabView: View {
                 }
                 .background(.BG)
                 .preferredColorScheme(.light)
+                .navigationBarHidden(true)
         }
         .modelContainer(for: Task.self)
         .accentColor(.blue)
+        .navigationBarHidden(true)
+
     }
 }
 
