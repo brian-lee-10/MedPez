@@ -30,7 +30,9 @@ struct MedPezApp: App {
                 if isUserLoggedIn {
                     MainTabView() // Main app screen
                 } else {
-                    LoginView() // Login screen
+                    LoginView()
+                        .background(.BG)
+                        .preferredColorScheme(.light)
                 }
             }
             .onAppear {
