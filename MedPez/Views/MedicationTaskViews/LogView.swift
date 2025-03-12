@@ -145,7 +145,6 @@ struct LogView: View {
             }
         }
     }
-
     
     /// Week View
     @ViewBuilder
@@ -170,6 +169,13 @@ struct LogView: View {
                                 Circle()
                                     .fill(.darkBlue)
                                     .matchedGeometryEffect(id: "TABINDICATOR", in: animation)
+                            }
+                            if day.date.isToday {
+                                Circle()
+                                    .fill(.cyan)
+                                    .frame(width: 5, height: 5)
+                                    .vSpacing(.bottom)
+                                    .offset(y: 12)
                             }
                         })
                         .background(.white.shadow(.drop(radius: 1)), in: .circle)
