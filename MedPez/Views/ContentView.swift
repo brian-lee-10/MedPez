@@ -3,34 +3,69 @@
 //  MedPez
 //
 //  Created by Brian Lee on 11/19/24.
-
 import SwiftUI
-import CoreBluetooth
+import FirebaseAuth
+import FirebaseFirestore
 
 struct ContentView: View {
+    @State private var name = "NAME"
     
     var body: some View {
         VStack {
+            // Greeting and Date Header
             HStack {
-                Text(getCurrentDayAndDate())
-                    .font(.custom("OpenSans-Regular", size:34))
-                    .bold()
+                Text(getGreeting() + ", \(name)")
+                    .font(.custom("OpenSans-Bold", size: 24))
+                    .foregroundColor(.black)
                 Spacer()
             }
             .padding()
+            
+            
+            
             Spacer()
-//            NavigationLink (destination: TestView()){
-//                Text("BLE Test View")
-//                    .font(.custom("OpenSans-Regular", size: 20))
-//            }
-            // Spacer()
+        }
+        .onAppear {
+            loadProfile()
+        }
+        .navigationBarHidden(true)
+    }
+    
+    
+    // Function to get greeting based on time of day
+    private func getGreeting() -> String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        switch hour {
+        case 0..<12: return "Good Morning"
+        case 12..<18: return "Good Afternoon"
+        default: return "Good Evening"
         }
     }
     
+    // Function to get current day and date
     private func getCurrentDayAndDate() -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "EEEE, MMM d" // Example: "Tuesday, Nov 19"
+        formatter.dateFormat = "EEEE, MMM d"
         return formatter.string(from: Date())
+    }
+    
+    // Fetch user profile from Firestore
+    private func loadProfile() {
+        guard let user = Auth.auth().currentUser else { return }
+        let db = Firestore.firestore()
+        let docRef = db.collection("users").document(user.uid)
+
+        docRef.getDocument { document, error in
+            if let document = document, document.exists {
+                let data = document.data()
+                DispatchQueue.main.async {
+                    let fullName = data?["name"] as? String ?? "Unknown"
+                    self.name = fullName.components(separatedBy: " ").first ?? fullName
+                }
+            } else {
+                print("Document does not exist")
+            }
+        }
     }
 }
 
