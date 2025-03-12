@@ -11,18 +11,36 @@ struct RegisterView: View {
     @State private var showAlert = false
     @State private var alertMessage = ""
     
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.presentationMode) var presentationMode  // <-- Add this
     
     var body: some View {
         VStack(spacing: 20) {
-            Spacer()
+            /// Top Banner
+            HStack {
+                Image(systemName: "pill")
+                    .resizable()
+                    .frame(width: 40, height: 40)
+                    .foregroundColor(.white)
+                    .offset(y: 20)
+                
+                Text("MedPez")
+                    .font(.custom("OpenSans-Bold", size: 30))
+                    .foregroundColor(.white)
+                    .offset(y: 20)
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 130)
+            .background(Color.purple)
+            .edgesIgnoringSafeArea(.top)
             
             Text("Get Started")
                 .font(.custom("OpenSans-Bold", size: 30))
+                .padding(.horizontal, 30)
             
             Text("Create your account below.")
                 .font(.custom("OpenSans-Regular", size: 17))
                 .padding(.vertical, 3)
+                .padding(.horizontal, 30)
             
             // Name Field
             VStack(alignment: .leading, spacing: 5) {
@@ -37,8 +55,8 @@ struct RegisterView: View {
                         RoundedRectangle(cornerRadius: 8)
                             .stroke(Color.gray, lineWidth: 1) // Grey border
                     )
-                    
             }
+            .padding(.horizontal, 30)
             
             // Email Field
             VStack(alignment: .leading, spacing: 5) {
@@ -56,6 +74,7 @@ struct RegisterView: View {
                             .stroke(Color.gray, lineWidth: 1) // Grey border
                     )
             }
+            .padding(.horizontal, 30)
             
             // Password Field
             VStack(alignment: .leading, spacing: 5) {
@@ -71,6 +90,7 @@ struct RegisterView: View {
                             .stroke(Color.gray, lineWidth: 1) // Grey border
                     )
             }
+            .padding(.horizontal, 30)
             
             // Register Button
             Button(action: { registerUser() }) {
@@ -82,26 +102,30 @@ struct RegisterView: View {
                     .foregroundColor(.white)
                     .cornerRadius(30)
             }
-            .padding(.top, 10)
+            .padding(.horizontal, 30)
+            
             Spacer()
         }
-        .padding(.horizontal, 30)
         .background(.BG)
         .preferredColorScheme(.light)
-        .alert(isPresented: $showAlert) {
-            Alert(title: Text("Registration"), message: Text(alertMessage), dismissButton: .default(Text("OK")))
-        }
         .navigationBarBackButtonHidden(true)
         .navigationBarItems(leading: Button(action: {
             self.presentationMode.wrappedValue.dismiss()
         }) {
             HStack {
                 Image(systemName: "chevron.left")
-                    .foregroundColor(.blue) // Custom back button color
-                Text("Login")
-                    .foregroundColor(.blue) // Custom back button color
+                    .foregroundColor(.white)
+                Text("Back")
+                    .foregroundColor(.white)
             }
         })
+        .alert(isPresented: $showAlert) {
+            Alert(title: Text("Registration"), message: Text(alertMessage), dismissButton: .default(Text("OK")) {
+                if alertMessage == "Registration successful!" {
+                    presentationMode.wrappedValue.dismiss()  // <-- Go back to LoginView
+                }
+            })
+        }
     }
     
     private func registerUser() {
@@ -129,9 +153,8 @@ struct RegisterView: View {
                     alertMessage = "Error saving user data: \(error.localizedDescription)"
                 } else {
                     alertMessage = "Registration successful!"
-                    isLoggedIn = true
+                    showAlert = true
                 }
-                showAlert = true
             }
         }
     }
