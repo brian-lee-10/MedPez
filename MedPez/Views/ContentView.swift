@@ -17,11 +17,11 @@ struct ContentView: View {
                 Text(getGreeting() + ", \(name)")
                     .font(.custom("OpenSans-Bold", size: 24))
                     .foregroundColor(.black)
+                
                 Spacer()
+                
             }
             .padding()
-            
-            
             
             Spacer()
         }
