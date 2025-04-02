@@ -6,16 +6,24 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
+import FirebaseAuth
 
 struct NewTaskView: View {
     /// View Properties
     @Environment(\.dismiss) private var dismiss
+    
     /// Model Content For Saving Data
     @Environment(\.modelContext) private var context
+    
+    let db = Firestore.firestore()
+    
     @State private var taskTitle: String = ""
     @State private var taskDate: Date = .init()
     @State private var taskColor: String = "TaskColor 1"
     @State private var taskDosage: String = ""
+    @State private var taskComplete: Bool = false
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 15, content: {
             Button(action: {
@@ -108,14 +116,15 @@ struct NewTaskView: View {
             
             Button(action: {
                 /// Saving Data
-                let task = Task(taskTitle: taskTitle, creationDate: taskDate, tint: taskColor, dosage: taskDosage)
-                do {
-                    context.insert(task)
-                    try context.save()
-                    dismiss()
-                } catch {
-                    print(error.localizedDescription)
-                }
+                saveMedicationFirebase()
+//                let task = Task(taskTitle: taskTitle, creationDate: taskDate, tint: taskColor, dosage: taskDosage)
+//                do {
+//                    context.insert(task)
+//                    try context.save()
+//                    dismiss()
+//                } catch {
+//                    print(error.localizedDescription)
+//                }
             }, label: {
                 Text("Add Medication")
                     .font(.custom("OpenSans-Bold", size: 22))
@@ -127,9 +136,38 @@ struct NewTaskView: View {
             })
             .disabled(taskTitle == "")
             .opacity(taskTitle == "" ? 0.5 : 1)
+            
+            
         })
         .padding(15)
     }
+    
+    private func saveMedicationFirebase() {
+            guard let userId = Auth.auth().currentUser?.uid else {
+                print("User not authenticated")
+                return
+            }
+            
+            do {
+                /// Save to Firestore under user's document
+                let taskData: [String: Any] = [
+                    "taskTitle": taskTitle,
+                    "creationDate": Timestamp(date: taskDate),
+                    "tint": taskColor,
+                    "dosage": taskDosage,
+                    "taskComplete": taskComplete
+                ]
+                
+                db.collection("users").document(userId).collection("medications").addDocument(data: taskData) { error in
+                    if let error = error {
+                        print("Error saving to Firestore: \(error.localizedDescription)")
+                    } else {
+                        print("Successfully saved to Firestore!")
+                    }
+                }
+                dismiss()
+            }
+        }
 }
 
 #Preview {
