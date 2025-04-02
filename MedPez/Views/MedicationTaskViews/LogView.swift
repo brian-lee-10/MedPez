@@ -102,15 +102,7 @@ struct LogView: View {
                                 week.contains { isSameDate($0.date, today) }
                             }) {
                                 currentWeekIndex = index
-                          } // else {
-//                                // Rebuild weekSlider centered around today's week
-//                                weekSlider = [
-//                                    today.createPreviousWeek(),
-//                                    today.fetchWeek(),
-//                                    today.createNextWeek()
-//                                ]
-//                                currentWeekIndex = 1 // Set to the middle (current) week
-//                            }
+                          }
                         }
                     }, label: {
                         Text("Today")
