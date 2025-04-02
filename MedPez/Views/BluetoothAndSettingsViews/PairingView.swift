@@ -17,7 +17,7 @@ struct PairingView: View {
         VStack(spacing: 8){
             /// Header
             HStack {
-                Text("My Device")
+                Text("Setup")
                     .font(.custom("OpenSans-Bold", size: 34))
                     .padding()
                 Spacer()
@@ -25,7 +25,7 @@ struct PairingView: View {
             /// Device Header Details
             VStack {
                 HStack {
-                    Text("MedPez 1.0")
+                    Text("Pairing")
                         .font(.custom("OpenSans-Bold", size: 24))
                     
                     Spacer()
