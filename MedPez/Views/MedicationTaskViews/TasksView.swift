@@ -18,11 +18,11 @@ struct TasksView: View {
         let startOfDate = calendar.startOfDay(for: currentDate.wrappedValue)
         let endOfDate = calendar.date(byAdding: .day, value: 1, to: startOfDate)!
         let predicate = #Predicate<Task> {
-            return $0.creationDate >= startOfDate && $0.creationDate < endOfDate
+            return $0.medicationDate >= startOfDate && $0.medicationDate < endOfDate
         }
         /// Sortin
         let sortDescriptor = [
-            SortDescriptor(\Task.creationDate, order: .forward)
+            SortDescriptor(\Task.medicationDate, order: .forward)
         ]
         self._tasks = Query(filter: predicate, sort: sortDescriptor, animation: .snappy)
     }
@@ -45,7 +45,7 @@ struct TasksView: View {
         .padding(.top, 15)
         .overlay {
             if tasks.isEmpty {
-                Text("No Medication Scheduled")
+                Text("No Medication")
                     .font(.custom("OpenSans-Bold", size:16))
                     .foregroundStyle(.black)
                     .frame(width: 250)
