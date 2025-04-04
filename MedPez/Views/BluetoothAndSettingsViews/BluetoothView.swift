@@ -32,9 +32,9 @@ struct BluetoothView: View {
                     
                     /// Device Connectivity Status
                     if let connectedPeripheralUUID = bluetoothManager.connectedPeripheralUUID, let connectedPeripheral = bluetoothManager.peripherals.first(where: { $0.id == connectedPeripheralUUID }) {
-//                        Text("Connected to \(connectedPeripheral.name)")
-//                            .font(.custom("OpenSans-Regular", size: 17))
-//                            .foregroundColor(.green)
+                        Text("Connected to \(connectedPeripheral.name)")
+                            .font(.custom("OpenSans-Regular", size: 8))
+                            .foregroundColor(.green)
                         Text("Connected")
                             .font(.custom("OpenSans-Regular", size: 17))
                             .foregroundColor(.white)

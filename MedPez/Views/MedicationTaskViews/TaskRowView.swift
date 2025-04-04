@@ -3,7 +3,7 @@
 //  MedPez
 //
 //  Created by Brian Lee on 2/20/25.
-//
+
 import SwiftUI
 import FirebaseFirestore
 import FirebaseAuth
@@ -12,8 +12,6 @@ struct TaskRowView: View {
     @Bindable var task: Task
     @Environment(\.modelContext) private var context
     @State private var showDeleteConfirmation = false  // State to track delete alert
-    
-    let db = Firestore.firestore()
 
     var body: some View {
         HStack(alignment: .top, spacing: 15) {
@@ -50,7 +48,7 @@ struct TaskRowView: View {
                             )
                         
                         /// Date Label
-                        Label(task.medicationDate.format("hh:mm a"), systemImage: "clock")
+                        Label(task.taskDate.format("hh:mm a"), systemImage: "clock")
                             .font(.custom("OpenSans-Bold", size: 12))
                             .foregroundStyle(.black)
                             .overlay(
@@ -63,11 +61,11 @@ struct TaskRowView: View {
                     }
                     Spacer()
                     
-                    if !task.dosage.isEmpty {
-                        Text("\(task.dosage) mg")
-                            .font(.custom("OpenSans-Regular", size: 14))
-                            .foregroundStyle(.black)
-                    }
+//                    if !task.dosage.isEmpty {
+//                        Text("\(task.dosage) mg")
+//                            .font(.custom("OpenSans-Regular", size: 14))
+//                            .foregroundStyle(.black)
+//                    }
                     
                     Spacer()
                     
@@ -104,32 +102,11 @@ struct TaskRowView: View {
         try? context.save()
     }
     
-//    private func deleteMedication() {
-//        guard let userId = Auth.auth().currentUser?.uid else {
-//            print("User not authenticated")
-//            return
-//        }
-//        
-//        guard let documentId = task.firestoreId else {
-//            print("No Firestore document ID found")
-//            return
-//        }
-//        
-//        /// Delete from Firestore
-//        db.collection("users").document(userId).collection("medications").document(documentId).delete { error in
-//            if let error = error {
-//                print("Error deleting from Firestore: \(error.localizedDescription)")
-//            } else {
-//                print("Successfully deleted from Firestore!")
-//            }
-//        }
-//    }
-
     var indicatorColor: Color {
         if task.isCompleted {
             return .green
         }
-        return task.medicationDate.isSameHour ? .darkBlue : (task.medicationDate.isPast ? .red : .black)
+        return task.taskDate.isSameHour ? .darkBlue : (task.taskDate.isPast ? .red : .black)
     }
 }
 

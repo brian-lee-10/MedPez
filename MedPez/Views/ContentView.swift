@@ -1,8 +1,3 @@
-//
-//  ContentView.swift
-//  MedPez
-//
-//  Created by Brian Lee on 11/19/24.
 import SwiftUI
 import FirebaseAuth
 import FirebaseFirestore
@@ -14,12 +9,11 @@ struct ContentView: View {
         VStack {
             // Greeting and Date Header
             HStack {
-                Text(getGreeting() + ", \(name)")
+                Text("\(getGreeting()), \(name)")
                     .font(.custom("OpenSans-Bold", size: 24))
                     .foregroundColor(.black)
                 
                 Spacer()
-                
             }
             .padding()
             
@@ -40,13 +34,6 @@ struct ContentView: View {
         case 12..<18: return "Good Afternoon"
         default: return "Good Evening"
         }
-    }
-    
-    // Function to get current day and date
-    private func getCurrentDayAndDate() -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "EEEE, MMM d"
-        return formatter.string(from: Date())
     }
     
     // Fetch user profile from Firestore

@@ -18,11 +18,11 @@ struct TasksView: View {
         let startOfDate = calendar.startOfDay(for: currentDate.wrappedValue)
         let endOfDate = calendar.date(byAdding: .day, value: 1, to: startOfDate)!
         let predicate = #Predicate<Task> {
-            return $0.medicationDate >= startOfDate && $0.medicationDate < endOfDate
+            return $0.taskDate >= startOfDate && $0.taskDate < endOfDate
         }
         /// Sortin
         let sortDescriptor = [
-            SortDescriptor(\Task.medicationDate, order: .forward)
+            SortDescriptor(\Task.taskDate, order: .forward)
         ]
         self._tasks = Query(filter: predicate, sort: sortDescriptor, animation: .snappy)
     }

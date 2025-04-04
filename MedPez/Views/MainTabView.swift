@@ -50,7 +50,6 @@ struct MainTabView: View {
                 .preferredColorScheme(.light)
                 .navigationBarHidden(true)
         }
-        .modelContainer(for: Task.self)
         .accentColor(.blue)
         .navigationBarHidden(true)
 

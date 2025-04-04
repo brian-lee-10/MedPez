@@ -13,7 +13,6 @@ struct LogView: View {
     @State private var weekSlider: [[Date.WeekDay]] = []
     @State private var currentWeekIndex: Int = 1
     @State private var createWeek: Bool = false
-    // @State private var tasks: [Task] = sampleTasks.sorted(by: { $1.creationDate > $0.creationDate})
     @State private var createNewTask: Bool = false
     /// Animation Namespace
     @Namespace private var animation
