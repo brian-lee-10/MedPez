@@ -12,11 +12,9 @@ import FirebaseAuth
 struct NewTaskView: View {
     /// View Properties
     @Environment(\.dismiss) private var dismiss
-    
     /// Model Content For Saving Data
     @Environment(\.modelContext) private var context
     
-    let db = Firestore.firestore()
     
     @State private var taskTitle: String = ""
     @State private var taskDate: Date = .init()
@@ -49,21 +47,21 @@ struct NewTaskView: View {
             .padding(.top, 5)
             
             /// Dosage and Frequency Fields
-//            HStack(spacing: 12) {
-//                VStack(alignment: .leading, spacing: 8, content: {
-//                    Text("Dosage")
-//                        .font(.custom("OpenSans-Bold", size:16))
-//                        .foregroundStyle(.black)
-//                    
-//                    TextField("Enter Dosage...", text: $taskDosage)
-//                        .keyboardType(.decimalPad)
-//                        .padding(.vertical, 12)
-//                        .padding(.horizontal, 15)
-//                        .background(.white.shadow(.drop(color: .black.opacity(0.25), radius: 2)), in: .rect(cornerRadius: 10))
-//                })
-//                /// Giving Some Space for tapping
-//                .padding(.trailing, -15)
-//            }
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 8, content: {
+                    Text("Dosage")
+                        .font(.custom("OpenSans-Bold", size:16))
+                        .foregroundStyle(.black)
+                    
+                    TextField("Enter Dosage...", text: $taskDosage)
+                        .keyboardType(.decimalPad)
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 15)
+                        .background(.white.shadow(.drop(color: .black.opacity(0.25), radius: 2)), in: .rect(cornerRadius: 10))
+                })
+                /// Giving Some Space for tapping
+                .padding(.trailing, -15)
+            }
             
             /// Date and Task Color
             HStack(spacing: 12) {
@@ -116,15 +114,16 @@ struct NewTaskView: View {
             
             Button(action: {
                 /// Saving Data
-                // saveMedicationFirebase()
-                let task = Task(taskTitle: taskTitle, taskDate: taskDate, tint: taskColor)
-                do {
-                    context.insert(task)
-                    try context.save()
-                    dismiss()
-                } catch {
-                    print(error.localizedDescription)
-                }
+                saveMedicationFirebase()
+//                let task = Task(taskTitle: taskTitle, taskDate: taskDate, tint: taskColor)
+//                do {
+//                    context.insert(task)
+//                    try context.save()
+//                    print("Task saved: \(task.taskTitle)")
+//                    dismiss()
+//                } catch {
+//                    print(error.localizedDescription)
+//                }
             }, label: {
                 Text("Add Medication")
                     .font(.custom("OpenSans-Bold", size: 22))
@@ -143,6 +142,8 @@ struct NewTaskView: View {
     }
     
     private func saveMedicationFirebase() {
+        let db = Firestore.firestore()
+        
         guard let userId = Auth.auth().currentUser?.uid else {
             print("User not authenticated")
             return
