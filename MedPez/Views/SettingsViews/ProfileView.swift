@@ -31,19 +31,6 @@ struct ProfileView: View {
                     .font(.custom("OpenSans-Regular", size:16))
                     .padding(.bottom, 10)
                 
-//                Button(action: {
-//                    // Edit profile action
-//                }) {
-//                    Text("Edit Profile")
-//                        .font(.custom("OpenSans-Bold", size:20))
-//                        .frame(maxWidth: .infinity)
-//                        .padding()
-//                        .background(Color.black)
-//                        .foregroundColor(.white)
-//                        .cornerRadius(8)
-//                }
-//                .padding(.horizontal, 40)
-                
                 NavigationLink(destination: EditProfileView()) {
                     Text("Edit Profile")
                         .font(.custom("OpenSans-Bold", size: 20))
