@@ -6,7 +6,6 @@
 //
 import SwiftUI
 import SwiftData
-import FirebaseFirestore
 
 /// Swift Data Structure
  @Model
