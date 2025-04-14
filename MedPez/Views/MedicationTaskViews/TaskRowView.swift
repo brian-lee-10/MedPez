@@ -5,13 +5,12 @@
 //  Created by Brian Lee on 2/20/25.
 
 import SwiftUI
-import FirebaseFirestore
-import FirebaseAuth
 
 struct TaskRowView: View {
     @Bindable var task: Task
     @Environment(\.modelContext) private var context
-    @State private var showDeleteConfirmation = false  // State to track delete alert
+    @State private var showDeleteConfirmation = false
+    @State private var taskTitle: String = ""
 
     var body: some View {
         HStack(alignment: .top, spacing: 15) {
