@@ -4,9 +4,14 @@ import FirebaseFirestore
 
 struct ContentView: View {
     @State private var name = "NAME"
+    @State private var showCalendar = false
+    @State private var showNewTask = false
+    @State private var showBluetooth = false
+    
+    let gridItems = [GridItem(.flexible()), GridItem(.flexible())]
     
     var body: some View {
-        VStack {
+        NavigationStack {
             // Greeting and Date Header
             HStack {
                 Text("\(getGreeting()), \(name)")
@@ -16,85 +21,34 @@ struct ContentView: View {
                 Spacer()
             }
             .padding()
-            // Current Day and Date
-//            Text(getCurrentDayAndDate())
-//                .font(.custom("OpenSans-Regular", size: 16))
-//                .foregroundColor(.gray)
-//                .padding([.leading, .trailing])
             
-            // Widgets
-            VStack(spacing: 15) {
-                // Pills Widget
-                WidgetView(title: "Pills Left", value: "5 Pills Remaining", iconName: "pill.fill", color: .blue)
-                
-                // Next Dose Widget
-                WidgetView(title: "Next Dose", value: "12:30 PM", iconName: "clock.fill", color: .green)
-                
-                // New Medication Button
-                Button(action: {
-                    // Navigate to New Medication View
-                    print("Navigate to New Medication View")
-                }) {
-                    Text("Add New Medication")
-                        .font(.custom("OpenSans-Bold", size: 18))
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .cornerRadius(10)
-                        .shadow(radius: 5)
+            VStack(alignment: .leading, spacing: 20) {
+                LazyVGrid(columns: gridItems, spacing: 16) {
+                    NextDoseCard()
+                    MyCalendarCard(showCalendar: $showCalendar)
+                    MyDeviceCard(showBluetooth: $showBluetooth)
+                    AddMedicationCard(showNewTask: $showNewTask)
                 }
-                .padding([.leading, .trailing])
-                
-                // Navigate to Device Tab
-                NavigationLink(destination: BluetoothView()) {
-                    Text("Go to Device Tab")
-                        .font(.custom("OpenSans-Bold", size: 18))
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.purple)
-                        .cornerRadius(10)
-                        .shadow(radius: 5)
-                }
-                .padding([.leading, .trailing])
+                .padding()
             }
-            .padding(.top, 20)
-            
+            .navigationDestination(isPresented: $showCalendar) {
+                LogView()
+            }
+            .navigationDestination(isPresented: $showBluetooth) {
+                BluetoothView()
+            }
+            .sheet(isPresented: $showNewTask) {
+                NewTaskView()
+                    .presentationDetents([.height(410)])
+                    .interactiveDismissDisabled()
+                    .presentationCornerRadius(30)
+            }
             Spacer()
         }
         .onAppear {
             loadProfile()
         }
         .navigationBarHidden(true)
-    }
-    
-    // Widget View: Custom view to reuse for widgets like Pills, Next Dose, etc.
-    private func WidgetView(title: String, value: String, iconName: String, color: Color) -> some View {
-        VStack {
-            HStack {
-                Image(systemName: iconName)
-                    .font(.title)
-                    .foregroundColor(.white)
-                    .padding(10)
-                    .background(color, in: Circle())
-                
-                VStack(alignment: .leading) {
-                    Text(title)
-                        .font(.custom("OpenSans-Bold", size: 22))
-                        .foregroundColor(.black)
-                    Text(value)
-                        .font(.custom("OpenSans-Regular", size: 16))
-                        .foregroundColor(.gray)
-                }
-                
-                Spacer()
-            }
-            .padding()
-            .background(Color.white)
-            .cornerRadius(12)
-            .shadow(radius: 5)
-        }
     }
 
     // Function to get greeting based on time of day
@@ -126,6 +80,95 @@ struct ContentView: View {
         }
     }
 }
+
+struct NextDoseCard: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Next Dose")
+                .font(.caption)
+                .foregroundColor(.white)
+            Text("2:00 PM")
+                .font(.title)
+                .bold()
+                .foregroundColor(.white)
+        }
+        .padding()
+        .frame(maxWidth: .infinity, minHeight: 100)
+        .background(Color.green)
+        .cornerRadius(16)
+    }
+}
+
+struct MyCalendarCard: View {
+    @Binding var showCalendar: Bool
+    
+    var body: some View {
+        Button(action: { showCalendar = true }) {
+            VStack(alignment: .leading, spacing: 6) {
+                Text("My Calendar")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                Image(systemName: "calendar")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 30, height: 30)
+                    .foregroundColor(.white)
+            }
+            .padding()
+            .frame(maxWidth: .infinity, minHeight: 100)
+            .background(Color.purple)
+            .cornerRadius(16)
+        }
+    }
+}
+
+struct MyDeviceCard: View {
+    @Binding var showBluetooth: Bool
+    
+    var body: some View {
+        Button(action: { showBluetooth = true }) {
+            VStack(alignment: .leading, spacing: 6) {
+                Text("My Device")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                Image(systemName: "bolt.horizontal.circle.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 30, height: 30)
+                    .foregroundColor(.white)
+            }
+            .padding()
+            .frame(maxWidth: .infinity, minHeight: 100)
+            .background(Color.blue)
+            .cornerRadius(16)
+        }
+    }
+}
+
+struct AddMedicationCard: View {
+    @Binding var showNewTask: Bool
+    
+    var body: some View {
+        Button(action: { showNewTask = true }) {
+            VStack(alignment: .leading, spacing: 6) {
+                Text("New Medicine")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                Image(systemName: "plus.circle.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 30, height: 30)
+                    .foregroundColor(.white)
+            }
+            .padding()
+            .frame(maxWidth: .infinity, minHeight: 100)
+            .background(Color.mint)
+            .cornerRadius(16)
+        }
+    }
+}
+
+
 
 #Preview {
     ContentView()
