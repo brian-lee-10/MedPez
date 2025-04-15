@@ -20,7 +20,7 @@ struct SettingsView: View {
 
             List {
                 Section {
-                    NavigationLink(destination: ContentView()) {
+                    NavigationLink(destination: HelpSupportView()) {
                         Label("Help & Support", systemImage: "questionmark.circle")
                             .font(.custom("OpenSans-Regular", size:18))
                     }
