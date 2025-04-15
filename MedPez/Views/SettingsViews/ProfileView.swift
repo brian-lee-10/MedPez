@@ -36,13 +36,14 @@ struct ProfileView: View {
                         .font(.custom("OpenSans-Bold", size: 20))
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.black)
+                        .background(Color.purple)
                         .foregroundColor(.white)
                         .cornerRadius(8)
                 }
                 .padding(.horizontal, 40)
 
             }
+            .background(Color.white)
             .padding(.bottom, 20)
             
             // Options List
