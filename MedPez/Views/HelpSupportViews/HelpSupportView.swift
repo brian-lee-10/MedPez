@@ -39,6 +39,20 @@ struct HelpSupportView: View {
                             .font(.custom("OpenSans-Regular", size: 18))
                     }
                 }
+                
+                Section(header: Text("MedPez Guide")) {
+                    NavigationLink(destination: HowToUseMedPezView()) {
+                        Label("How to Use App", systemImage: "book")
+                            .font(.custom("OpenSans-Regular", size: 18))
+                    }
+                }
+                
+                Section(header: Text("Connection Guide")) {
+                    NavigationLink(destination: HowToConnectView()) {
+                        Label("How to Use App", systemImage: "book")
+                            .font(.custom("OpenSans-Regular", size: 18))
+                    }
+                }
 
                 Section(header: Text("Emergency")) {
                     HStack {
