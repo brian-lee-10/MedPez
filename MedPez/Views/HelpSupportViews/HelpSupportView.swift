@@ -6,11 +6,12 @@
 //
 
 import SwiftUI
-import MessageUI
 
 struct HelpSupportView: View {
     @State private var isShowingMailView = false
     @State private var showMailError = false
+    @State private var showCallAlert = false
+
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -18,61 +19,68 @@ struct HelpSupportView: View {
                 .font(.custom("OpenSans-Bold", size: 28))
                 .padding(.top, 20)
                 .padding(.horizontal)
-
+            
             List {
-                Section(header: Text("Support")) {
+                /// Email Support
+                Section(header: Text("Contact Support")) {
                     Button(action: {
-//                        if MFMailComposeViewController.canSendMail() {
-//                            isShowingMailView = true
-//                        } else {
-//                            showMailError = true
-//                        }
+                        if let url = URL(string: "mailto:support@medpez.com?subject=MedPez%20Support&body=Hi%20MedPez%20Team,") {
+                            UIApplication.shared.open(url)
+                        } else {
+                            showMailError = true
+                        }
                     }) {
-                        Label("Contact Email Support", systemImage: "envelope")
-                            .font(.custom("OpenSans-Regular", size: 18))
-                    }
-                }
-
-                Section(header: Text("App Guide")) {
-                    NavigationLink(destination: HowToUseAppView()) {
-                        Label("How to Use App", systemImage: "book")
+                        Label("Need Help?", systemImage: "envelope")
                             .font(.custom("OpenSans-Regular", size: 18))
                     }
                 }
                 
-                Section(header: Text("MedPez Guide")) {
-                    NavigationLink(destination: HowToUseMedPezView()) {
-                        Label("How to Use App", systemImage: "book")
-                            .font(.custom("OpenSans-Regular", size: 18))
-                    }
-                }
-                
-                Section(header: Text("Connection Guide")) {
-                    NavigationLink(destination: HowToConnectView()) {
-                        Label("How to Use App", systemImage: "book")
-                            .font(.custom("OpenSans-Regular", size: 18))
-                    }
-                }
-
+                /// Emergency Services
                 Section(header: Text("Emergency")) {
                     HStack {
-                        Label("Emergency Call (Coming Soon)", systemImage: "phone.fill")
-                            .foregroundColor(.gray)
+                        Button(action: {
+                            showCallAlert = true
+                        }) {
+                            Label("Emergency Help (911)", systemImage: "phone.fill")
+                                .font(.custom("OpenSans-Regular", size: 18))
+                                .foregroundColor(.red)
+                        }
+                        .alert("Emergency Call", isPresented: $showCallAlert) {
+                            Button("Cancel", role: .cancel) {}
+                            Button("Call", role: .destructive) {
+                                if let url = URL(string: "tel://911"), UIApplication.shared.canOpenURL(url) {
+                                    UIApplication.shared.open(url)
+                                }
+                            }
+                        } message: {
+                            Text("This will call emergency services. Are you sure?")
+                        }
+                        
+                    }
+                }
+                
+                /// Guides
+                Section(header: Text("Guides")) {
+                    NavigationLink(destination: HowToUseAppView()) {
+                        Label("Getting Started", systemImage: "book")
+                            .font(.custom("OpenSans-Regular", size: 18))
+                    }
+                    
+                    NavigationLink(destination: HowToUseMedPezView()) {
+                        Label("Using MedPez", systemImage: "book")
+                            .font(.custom("OpenSans-Regular", size: 18))
+                    }
+                    
+                    NavigationLink(destination: HowToConnectView()) {
+                        Label("Device Setup Guide", systemImage: "book")
                             .font(.custom("OpenSans-Regular", size: 18))
                     }
                 }
+                
             }
             .listStyle(InsetGroupedListStyle())
-
+            
             Spacer()
-        }
-        .sheet(isPresented: $isShowingMailView) {
-//            MailView(recipientEmail: "support@medpez.com")
-        }
-        .alert("Email Not Available", isPresented: $showMailError) {
-            Button("OK", role: .cancel) { }
-        } message: {
-            Text("Please configure a mail account in order to send emails.")
         }
     }
 }
