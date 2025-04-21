@@ -7,6 +7,8 @@ struct ContentView: View {
     @State private var showCalendar = false
     @State private var showNewTask = false
     @State private var showBluetooth = false
+    @State private var remainingPillsToday: Int = 0
+
     
     let gridItems = [GridItem(.flexible()), GridItem(.flexible())]
     
@@ -26,9 +28,12 @@ struct ContentView: View {
                 LazyVGrid(columns: gridItems, spacing: 16) {
                     NextDoseCard()
                     MyCalendarCard(showCalendar: $showCalendar)
+                    PillsRemainingTodayCard(pillsRemaining: 4)
+                    PillsLeftInMedPezCard(pillsLeft: 14)
                     MyDeviceCard(showBluetooth: $showBluetooth)
                     AddMedicationCard(showNewTask: $showNewTask)
                 }
+
                 .padding()
             }
             .navigationDestination(isPresented: $showCalendar) {
@@ -48,6 +53,10 @@ struct ContentView: View {
         .onAppear {
             loadProfile()
         }
+        .onAppear {
+            fetchRemainingPillsForToday()
+        }
+
         .navigationBarHidden(true)
     }
 
@@ -78,6 +87,34 @@ struct ContentView: View {
                 print("Document does not exist")
             }
         }
+    }
+    
+    private func fetchRemainingPillsForToday() {
+        guard let user = Auth.auth().currentUser else { return }
+        let db = Firestore.firestore()
+        
+        let today = Calendar.current.startOfDay(for: Date())
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
+
+        db.collection("users")
+            .document(user.uid)
+            .collection("medications")
+            .whereField("taskDate", isGreaterThanOrEqualTo: Timestamp(date: today))
+            .whereField("taskDate", isLessThan: Timestamp(date: tomorrow))
+            .getDocuments { snapshot, error in
+                if let error = error {
+                    print("Error fetching tasks: \(error.localizedDescription)")
+                    return
+                }
+
+                let documents = snapshot?.documents ?? []
+                let uncompletedTasks = documents.filter { doc in
+                    let isCompleted = doc.data()["taskComplete"] as? Bool ?? false
+                    return !isCompleted
+                }
+
+                self.remainingPillsToday = uncompletedTasks.count
+            }
     }
 }
 
@@ -168,6 +205,45 @@ struct AddMedicationCard: View {
     }
 }
 
+struct PillsRemainingTodayCard: View {
+    var pillsRemaining: Int
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Pills Remaining")
+                .font(.caption)
+                .foregroundColor(.white)
+            Text("\(pillsRemaining) today")
+                .font(.title)
+                .bold()
+                .foregroundColor(.white)
+        }
+        .padding()
+        .frame(maxWidth: .infinity, minHeight: 100)
+        .background(Color.indigo)
+        .cornerRadius(16)
+    }
+}
+
+struct PillsLeftInMedPezCard: View {
+    var pillsLeft: Int
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("In MedPez")
+                .font(.caption)
+                .foregroundColor(.white)
+            Text("\(pillsLeft) pills")
+                .font(.title)
+                .bold()
+                .foregroundColor(.white)
+        }
+        .padding()
+        .frame(maxWidth: .infinity, minHeight: 100)
+        .background(Color.gray)
+        .cornerRadius(16)
+    }
+}
 
 
 #Preview {
