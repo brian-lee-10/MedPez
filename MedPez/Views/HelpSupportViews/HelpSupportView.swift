@@ -24,7 +24,7 @@ struct HelpSupportView: View {
                 /// Email Support
                 Section(header: Text("Contact Support")) {
                     Button(action: {
-                        if let url = URL(string: "mailto:support@medpez.com?subject=MedPez%20Support&body=Hi%20MedPez%20Team,") {
+                        if let url = URL(string: "mailto:medpez.study@gmail.com?subject=MedPez%20Support&body=Hi%20MedPez%20Team,") {
                             UIApplication.shared.open(url)
                         } else {
                             showMailError = true
