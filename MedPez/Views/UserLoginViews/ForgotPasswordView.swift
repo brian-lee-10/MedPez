@@ -84,7 +84,7 @@ struct ForgotPasswordView: View {
                 }
             })
         }
-        .background(.BG)
+        //.background(.BG)
         .preferredColorScheme(.light)
     }
 
