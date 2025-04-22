@@ -18,7 +18,6 @@ struct MainTabView: View {
                 }
                 .background(.BG)
                 .preferredColorScheme(.light)
-                .navigationBarHidden(true)
 
             // Log Tab
             LogView()
@@ -28,7 +27,6 @@ struct MainTabView: View {
                 }
                 .background(.BG)
                 .preferredColorScheme(.light)
-                .navigationBarHidden(true)
 
             // Settings Tab
             BluetoothView()
@@ -38,7 +36,6 @@ struct MainTabView: View {
                 }
                 .background(.BG)
                 .preferredColorScheme(.light)
-                .navigationBarHidden(true)
 
             // Profile Tab
             ProfileView()
@@ -48,11 +45,9 @@ struct MainTabView: View {
                 }
                 .background(.BG)
                 .preferredColorScheme(.light)
-                .navigationBarHidden(true)
         }
+        .modelContainer(for: Task.self)
         .accentColor(.blue)
-        .navigationBarHidden(true)
-
     }
 }
 

@@ -3,6 +3,7 @@
 //  MedPez
 //
 //  Created by Brian Lee on 2/20/25.
+//
 
 import SwiftUI
 
@@ -10,16 +11,16 @@ struct TaskRowView: View {
     @Bindable var task: Task
     @Environment(\.modelContext) private var context
     @State private var showDeleteConfirmation = false
-    @State private var taskTitle: String = ""
 
     var body: some View {
         HStack(alignment: .top, spacing: 15) {
+            /// Completion Circle
             Circle()
                 .fill(indicatorColor)
                 .frame(width: 10, height: 10)
                 .padding(4)
                 .background(.white.shadow(.drop(color: .black.opacity(0.1), radius: 3)), in: .circle)
-                .overlay{
+                .overlay {
                     Circle()
                         .foregroundStyle(.clear)
                         .contentShape(.circle)
@@ -31,10 +32,11 @@ struct TaskRowView: View {
                         }
                 }
 
+            /// Task Details & Delete Button
             VStack {
                 HStack {
                     VStack(alignment: .leading, spacing: 8) {
-                        /// Task Title
+                        /// Title
                         Text(task.taskTitle)
                             .font(.custom("OpenSans-Bold", size: 18))
                             .foregroundStyle(.black)
@@ -42,35 +44,30 @@ struct TaskRowView: View {
                                 task.isCompleted ? AnyView(
                                     Rectangle()
                                         .fill(Color.black)
-                                        .frame(height: 3)
+                                        .frame(height: 2)
+                                        .offset(y: 6)
                                 ) : AnyView(EmptyView())
                             )
-                        
-                        /// Date Label
-                        Label(task.taskDate.format("hh:mm a"), systemImage: "clock")
-                            .font(.custom("OpenSans-Bold", size: 12))
+
+                        /// Time
+                        Label(task.creationDate.format("hh:mm a"), systemImage: "clock")
+                            .font(.custom("OpenSans-Regular", size: 11))
                             .foregroundStyle(.black)
                             .overlay(
                                 task.isCompleted ? AnyView(
                                     Rectangle()
                                         .fill(Color.black)
-                                        .frame(height: 3)
+                                        .frame(height: 2)
+                                        .offset(y: 5)
                                 ) : AnyView(EmptyView())
                             )
                     }
+
                     Spacer()
-                    
-//                    if !task.dosage.isEmpty {
-//                        Text("\(task.dosage) mg")
-//                            .font(.custom("OpenSans-Regular", size: 14))
-//                            .foregroundStyle(.black)
-//                    }
-                    
-                    Spacer()
-                    
-                    /// **Delete Button with Confirmation**
+
+                    /// Delete Button with Confirmation
                     Button(action: {
-                        showDeleteConfirmation = true  // Show confirmation alert
+                        showDeleteConfirmation = true
                     }) {
                         Image(systemName: "trash")
                             .foregroundStyle(.red)
@@ -78,7 +75,7 @@ struct TaskRowView: View {
                             .background(Color.white.shadow(.drop(color: .black.opacity(0.1), radius: 3)), in: .circle)
                     }
                     .alert("Delete Medication?", isPresented: $showDeleteConfirmation) {
-                        Button("Cancel", role: .cancel) { }
+                        Button("Cancel", role: .cancel) {}
                         Button("Delete", role: .destructive) {
                             deleteTask()
                         }
@@ -95,17 +92,16 @@ struct TaskRowView: View {
         .hSpacing(.leading)
     }
 
-    /// Function to delete task
     private func deleteTask() {
         context.delete(task)
         try? context.save()
     }
-    
+
     var indicatorColor: Color {
         if task.isCompleted {
             return .green
         }
-        return task.taskDate.isSameHour ? .darkBlue : (task.taskDate.isPast ? .red : .black)
+        return task.creationDate.isSameHour ? .darkBlue : (task.creationDate.isPast ? .red : .black)
     }
 }
 

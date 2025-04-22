@@ -12,15 +12,15 @@ import SwiftData
 class Task: Identifiable {
     var id: UUID
     var taskTitle: String
-    var taskDate: Date
+    var creationDate: Date
     var isCompleted: Bool
     var tint: String
     // var dosage: String
     
-    init(id: UUID = .init(), taskTitle: String, taskDate: Date = .init(), isCompleted: Bool = false, tint: String) {
+    init(id: UUID = .init(), taskTitle: String, creationDate: Date = .init(), isCompleted: Bool = false, tint: String) {
         self.id = id
         self.taskTitle = taskTitle
-        self.taskDate = taskDate
+        self.creationDate = creationDate
         self.isCompleted = isCompleted
         self.tint = tint
         // self.dosage = dosage

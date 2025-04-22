@@ -19,7 +19,7 @@ struct NewTaskView: View {
     @State private var taskTitle: String = ""
     @State private var taskDate: Date = .init()
     @State private var taskColor: String = "TaskColor 1"
-    @State private var taskDosage: String = ""
+    // @State private var taskDosage: String = ""
     @State private var taskComplete: Bool = false
     
     var body: some View {
@@ -47,21 +47,21 @@ struct NewTaskView: View {
             .padding(.top, 5)
             
             /// Dosage and Frequency Fields
-            HStack(spacing: 12) {
-                VStack(alignment: .leading, spacing: 8, content: {
-                    Text("Dosage")
-                        .font(.custom("OpenSans-Bold", size:16))
-                        .foregroundStyle(.black)
-                    
-                    TextField("Enter Dosage...", text: $taskDosage)
-                        .keyboardType(.decimalPad)
-                        .padding(.vertical, 12)
-                        .padding(.horizontal, 15)
-                        .background(.white.shadow(.drop(color: .black.opacity(0.25), radius: 2)), in: .rect(cornerRadius: 10))
-                })
-                /// Giving Some Space for tapping
-                .padding(.trailing, -15)
-            }
+//            HStack(spacing: 12) {
+//                VStack(alignment: .leading, spacing: 8, content: {
+//                    Text("Dosage")
+//                        .font(.custom("OpenSans-Bold", size:16))
+//                        .foregroundStyle(.black)
+//                    
+//                    TextField("Enter Dosage...", text: $taskDosage)
+//                        .keyboardType(.decimalPad)
+//                        .padding(.vertical, 12)
+//                        .padding(.horizontal, 15)
+//                        .background(.white.shadow(.drop(color: .black.opacity(0.25), radius: 2)), in: .rect(cornerRadius: 10))
+//                })
+//                /// Giving Some Space for tapping
+//                .padding(.trailing, -15)
+//            }
             
             /// Date and Task Color
             HStack(spacing: 12) {
@@ -114,16 +114,14 @@ struct NewTaskView: View {
             
             Button(action: {
                 /// Saving Data
-                saveMedicationFirebase()
-//                let task = Task(taskTitle: taskTitle, taskDate: taskDate, tint: taskColor)
-//                do {
-//                    context.insert(task)
-//                    try context.save()
-//                    print("Task saved: \(task.taskTitle)")
-//                    dismiss()
-//                } catch {
-//                    print(error.localizedDescription)
-//                }
+                let task = Task(taskTitle: taskTitle, creationDate: taskDate, tint: taskColor)
+                do {
+                    context.insert(task)
+                    try context.save()
+                    dismiss()
+                } catch {
+                    print(error.localizedDescription)
+                }
             }, label: {
                 Text("Add Medication")
                     .font(.custom("OpenSans-Bold", size: 22))
@@ -141,34 +139,34 @@ struct NewTaskView: View {
         .padding(15)
     }
     
-    private func saveMedicationFirebase() {
-        let db = Firestore.firestore()
-        
-        guard let userId = Auth.auth().currentUser?.uid else {
-            print("User not authenticated")
-            return
-        }
-        
-        let taskData: [String: Any] = [
-            "taskTitle": taskTitle,
-            "taskDate": Timestamp(date: taskDate),
-            "tint": taskColor,
-            "dosage": taskDosage,
-            "taskComplete": taskComplete
-        ]
-        
-        db.collection("users")
-            .document(userId)
-            .collection("medications")
-            .addDocument(data: taskData) { error in
-                if let error = error {
-                    print("Error saving to Firestore: \(error.localizedDescription)")
-                } else {
-                    print("Successfully saved to Firestore!")
-                    dismiss()
-                }
-            }
-    }
+//    private func saveMedicationFirebase() {
+//        let db = Firestore.firestore()
+//        
+//        guard let userId = Auth.auth().currentUser?.uid else {
+//            print("User not authenticated")
+//            return
+//        }
+//        
+//        let taskData: [String: Any] = [
+//            "taskTitle": taskTitle,
+//            "taskDate": Timestamp(date: taskDate),
+//            "tint": taskColor,
+//            "dosage": taskDosage,
+//            "taskComplete": taskComplete
+//        ]
+//        
+//        db.collection("users")
+//            .document(userId)
+//            .collection("medications")
+//            .addDocument(data: taskData) { error in
+//                if let error = error {
+//                    print("Error saving to Firestore: \(error.localizedDescription)")
+//                } else {
+//                    print("Successfully saved to Firestore!")
+//                    dismiss()
+//                }
+//            }
+//    }
 
 }
 
