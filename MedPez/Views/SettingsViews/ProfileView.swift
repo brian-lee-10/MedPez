@@ -54,10 +54,6 @@ struct ProfileView: View {
                             .font(.custom("OpenSans-Regular", size:18))
                     }
 
-//                    NavigationLink(destination: ContentView()) {
-//                        Label("Change Password", systemImage: "lock")
-//                            .font(.custom("OpenSans-Regular", size:18))
-//                    }
                 }
             }
             .listStyle(InsetGroupedListStyle())
