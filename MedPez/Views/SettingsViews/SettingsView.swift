@@ -20,6 +20,11 @@ struct SettingsView: View {
 
             List {
                 Section {
+                    NavigationLink(destination: BluetoothView()) {
+                        Label("My Device", systemImage: "dot.radiowaves.left.and.right")
+                            .font(.custom("OpenSans-Regular", size:18))
+                    }
+                    
                     NavigationLink(destination: HelpSupportView()) {
                         Label("Support Center", systemImage: "questionmark.circle")
                             .font(.custom("OpenSans-Regular", size:18))
@@ -57,4 +62,8 @@ struct SettingsView: View {
             print("Error signing out: \(error.localizedDescription)")
         }
     }
+}
+
+#Preview {
+    SettingsView()
 }
