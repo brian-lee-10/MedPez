@@ -24,18 +24,26 @@ struct ContentView: View {
             }
             .padding()
             
-            VStack(alignment: .leading, spacing: 20) {
+            // Spacer()
+            
+            VStack(spacing: 16) {
+                // Full-width Next Dose
+                NextDoseCard()
+                    .frame(maxWidth: .infinity, minHeight: 100)
+
                 LazyVGrid(columns: gridItems, spacing: 16) {
-                    NextDoseCard()
                     MyCalendarCard(showCalendar: $showCalendar)
-                    PillsRemainingTodayCard(pillsRemaining: 4)
                     PillsLeftInMedPezCard(pillsLeft: 14)
                     MyDeviceCard(showBluetooth: $showBluetooth)
                     AddMedicationCard(showNewTask: $showNewTask)
                 }
 
-                .padding()
+                // Full-width Pills Remaining
+                PillsRemainingTodayCard(pillsRemaining: remainingPillsToday)
+                    .frame(maxWidth: .infinity, minHeight: 100)
             }
+            .padding()
+
             .navigationDestination(isPresented: $showCalendar) {
                 LogView()
             }
@@ -93,6 +101,7 @@ struct ContentView: View {
         guard let user = Auth.auth().currentUser else { return }
         let db = Firestore.firestore()
         
+        // Get today's date range (00:00 today to 00:00 tomorrow)
         let today = Calendar.current.startOfDay(for: Date())
         let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
 
@@ -113,19 +122,23 @@ struct ContentView: View {
                     return !isCompleted
                 }
 
-                self.remainingPillsToday = uncompletedTasks.count
+                // Update state
+                DispatchQueue.main.async {
+                    self.remainingPillsToday = uncompletedTasks.count
+                }
             }
     }
+
 }
 
 struct NextDoseCard: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        HStack {
             Text("Next Dose")
-                .font(.caption)
+                .font(.custom("OpenSans-Regular", size: 24))
                 .foregroundColor(.white)
             Text("2:00 PM")
-                .font(.title)
+                .font(.custom("OpenSans-Bold", size: 32))
                 .bold()
                 .foregroundColor(.white)
         }
@@ -209,14 +222,15 @@ struct PillsRemainingTodayCard: View {
     var pillsRemaining: Int
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Pills Remaining")
-                .font(.caption)
+        HStack {
+            Text("Pills Left for Today")
+                .font(.custom("OpenSans-Regular", size: 24))
                 .foregroundColor(.white)
-            Text("\(pillsRemaining) today")
-                .font(.title)
+            Text("\(pillsRemaining)")
+                .font(.custom("OpenSans-Bold", size: 32))
                 .bold()
                 .foregroundColor(.white)
+                .padding(.horizontal)
         }
         .padding()
         .frame(maxWidth: .infinity, minHeight: 100)
