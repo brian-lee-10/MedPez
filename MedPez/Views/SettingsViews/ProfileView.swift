@@ -45,7 +45,7 @@ struct ProfileView: View {
             }
             .background(Color.white)
             .padding(.bottom, 20)
-            
+                        
             // Options List
             List {
                 Section {
@@ -53,7 +53,6 @@ struct ProfileView: View {
                         Label("Settings", systemImage: "gear")
                             .font(.custom("OpenSans-Regular", size:18))
                     }
-
                 }
             }
             .listStyle(InsetGroupedListStyle())
