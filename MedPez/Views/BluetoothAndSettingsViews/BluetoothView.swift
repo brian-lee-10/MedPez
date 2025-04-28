@@ -79,8 +79,8 @@ struct BluetoothView: View {
                     VStack {
                         Text("Battery")
                             .font(.custom("OpenSans-Regular", size: 14))
-                        Image(systemName: "battery.75")
-                        Text("69%")
+                        Image(systemName: "battery.100")
+                        Text("100%")
                             .font(.custom("OpenSans-Bold", size: 20))
                     }
                     .frame(maxWidth: .infinity)
