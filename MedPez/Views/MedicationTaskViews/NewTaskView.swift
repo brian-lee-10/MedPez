@@ -113,7 +113,9 @@ struct NewTaskView: View {
             Spacer(minLength: 0)
             
             Button(action: {
-                /// Saving Data
+                /// Saving Data with Firebase
+                saveMedicationFirebase()
+                /// Saving Data with SwiftData
                 let task = Task(taskTitle: taskTitle, creationDate: taskDate, tint: taskColor)
                 do {
                     context.insert(task)
@@ -139,34 +141,34 @@ struct NewTaskView: View {
         .padding(15)
     }
     
-//    private func saveMedicationFirebase() {
-//        let db = Firestore.firestore()
-//        
-//        guard let userId = Auth.auth().currentUser?.uid else {
-//            print("User not authenticated")
-//            return
-//        }
-//        
-//        let taskData: [String: Any] = [
-//            "taskTitle": taskTitle,
-//            "taskDate": Timestamp(date: taskDate),
-//            "tint": taskColor,
-//            "dosage": taskDosage,
-//            "taskComplete": taskComplete
-//        ]
-//        
-//        db.collection("users")
-//            .document(userId)
-//            .collection("medications")
-//            .addDocument(data: taskData) { error in
-//                if let error = error {
-//                    print("Error saving to Firestore: \(error.localizedDescription)")
-//                } else {
-//                    print("Successfully saved to Firestore!")
-//                    dismiss()
-//                }
-//            }
-//    }
+    private func saveMedicationFirebase() {
+        let db = Firestore.firestore()
+        
+        guard let userId = Auth.auth().currentUser?.uid else {
+            print("User not authenticated")
+            return
+        }
+        
+        let taskData: [String: Any] = [
+            "taskTitle": taskTitle,
+            "taskDate": Timestamp(date: taskDate),
+            "tint": taskColor,
+            "taskComplete": taskComplete,
+            // "dosage": taskDosage
+        ]
+        
+        db.collection("users")
+            .document(userId)
+            .collection("medications")
+            .addDocument(data: taskData) { error in
+                if let error = error {
+                    print("Error saving to Firestore: \(error.localizedDescription)")
+                } else {
+                    print("Successfully saved to Firestore!")
+                    dismiss()
+                }
+            }
+    }
 
 }
 
