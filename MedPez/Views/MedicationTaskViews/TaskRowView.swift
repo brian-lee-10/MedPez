@@ -67,6 +67,16 @@ struct TaskRowView: View {
                     }
 
                     Spacer()
+                    
+                    Text("Dosage: \(task.dosage) mg")
+                        .font(.custom("OpenSans-Regular", size: 14))
+                        .foregroundStyle(.black.opacity(0.8))
+
+                    Text("Pills: \(task.numberOfPills)")
+                        .font(.custom("OpenSans-Regular", size: 14))
+                        .foregroundStyle(.black.opacity(0.8))
+                    
+                    Spacer()
 
                     /// Delete Button with Confirmation
                     Button(action: {

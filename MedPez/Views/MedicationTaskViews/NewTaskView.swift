@@ -19,7 +19,8 @@ struct NewTaskView: View {
     @State private var taskTitle: String = ""
     @State private var taskDate: Date = .init()
     // @State private var taskColor: String = "TaskColor 1"
-    // @State private var taskDosage: String = ""
+    @State private var taskDosage: String = ""
+    @State private var taskPills: String = ""
     @State private var taskComplete: Bool = false
     
     var body: some View {
@@ -46,22 +47,23 @@ struct NewTaskView: View {
             })
             .padding(.top, 5)
             
-            /// Dosage and Frequency Fields
-//            HStack(spacing: 12) {
-//                VStack(alignment: .leading, spacing: 8, content: {
-//                    Text("Dosage")
-//                        .font(.custom("OpenSans-Bold", size:16))
-//                        .foregroundStyle(.black)
-//                    
-//                    TextField("Enter Dosage...", text: $taskDosage)
-//                        .keyboardType(.decimalPad)
-//                        .padding(.vertical, 12)
-//                        .padding(.horizontal, 15)
-//                        .background(.white.shadow(.drop(color: .black.opacity(0.25), radius: 2)), in: .rect(cornerRadius: 10))
-//                })
-//                /// Giving Some Space for tapping
-//                .padding(.trailing, -15)
-//            }
+            
+            
+            /// Number of Pills Field
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 8, content: {
+                    Text("Number of Pills")
+                        .font(.custom("OpenSans-Bold", size:16))
+                        .foregroundStyle(.black)
+                    
+                    TextField("Enter Number of Pills", text: $taskPills)
+                        .keyboardType(.numberPad)
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 15)
+                        .background(.white.shadow(.drop(color: .black.opacity(0.25), radius: 2)), in: .rect(cornerRadius: 10))
+                })
+                .padding(.top, 5)
+            }
             
             /// Date and Task Color
             HStack(spacing: 12) {
@@ -77,7 +79,17 @@ struct NewTaskView: View {
                 /// Giving Some Space for tapping
                 .padding(.trailing, -15)
                 
-                Spacer()
+                VStack(alignment: .leading, spacing: 8, content: {
+                    Text("Dosage")
+                        .font(.custom("OpenSans-Bold", size:16))
+                        .foregroundStyle(.black)
+                    
+                    TextField("Enter Dosage...", text: $taskDosage)
+                        .keyboardType(.decimalPad)
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 15)
+                        .background(.white.shadow(.drop(color: .black.opacity(0.25), radius: 2)), in: .rect(cornerRadius: 10))
+                })
                 
 //                VStack(alignment: .leading, spacing: 8, content: {
 //                    Text("Task Color")
@@ -118,7 +130,10 @@ struct NewTaskView: View {
                 /// Saving Data with Firebase
                 saveMedicationFirebase()
                 /// Saving Data with SwiftData
-                let task = Task(taskTitle: taskTitle, creationDate: taskDate/*, tint: taskColor*/)
+                let task = Task(taskTitle: taskTitle, creationDate: taskDate,
+                    dosage: taskDosage,
+                    numberOfPills: Int(taskPills) ?? 0
+                    /*, tint: taskColor*/)
                 do {
                     context.insert(task)
                     try context.save()
@@ -156,7 +171,8 @@ struct NewTaskView: View {
             "taskDate": Timestamp(date: taskDate),
             // "tint": taskColor,
             "taskComplete": taskComplete,
-            // "dosage": taskDosage
+            "dosage": taskDosage,
+            "numberOfPills": Int(taskPills) ?? 0
         ]
         
         db.collection("users")
