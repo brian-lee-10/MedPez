@@ -18,7 +18,7 @@ struct NewTaskView: View {
     
     @State private var taskTitle: String = ""
     @State private var taskDate: Date = .init()
-    @State private var taskColor: String = "TaskColor 1"
+    // @State private var taskColor: String = "TaskColor 1"
     // @State private var taskDosage: String = ""
     @State private var taskComplete: Bool = false
     
@@ -77,35 +77,37 @@ struct NewTaskView: View {
                 /// Giving Some Space for tapping
                 .padding(.trailing, -15)
                 
-                VStack(alignment: .leading, spacing: 8, content: {
-                    Text("Task Color")
-                        .font(.custom("OpenSans-Regular", size:16))
-                        .foregroundStyle(.gray)
-                    
-                    let colors: [String] = (1...5).compactMap {index -> String in
-                        return "TaskColor \(index)"
-                    }
-                    
-                    HStack(spacing: 0) {
-                        ForEach(colors, id: \.self) { color in
-                            Circle()
-                                .fill(Color(color))
-                                .frame(width: 20, height: 20)
-                                .background(content: {
-                                    Circle()
-                                        .stroke(lineWidth: 2)
-                                        .opacity(taskColor == color ? 1 : 0)
-                                })
-                                .hSpacing(.center)
-                                .contentShape(.rect)
-                                .onTapGesture {
-                                    withAnimation(.snappy) {
-                                        taskColor = color
-                                    }
-                                }
-                        }
-                    }
-                })
+                Spacer()
+                
+//                VStack(alignment: .leading, spacing: 8, content: {
+//                    Text("Task Color")
+//                        .font(.custom("OpenSans-Regular", size:16))
+//                        .foregroundStyle(.gray)
+//                    
+//                    let colors: [String] = (1...5).compactMap {index -> String in
+//                        return "TaskColor \(index)"
+//                    }
+//                    
+//                    HStack(spacing: 0) {
+//                        ForEach(colors, id: \.self) { color in
+//                            Circle()
+//                                .fill(Color(color))
+//                                .frame(width: 20, height: 20)
+//                                .background(content: {
+//                                    Circle()
+//                                        .stroke(lineWidth: 2)
+//                                        .opacity(taskColor == color ? 1 : 0)
+//                                })
+//                                .hSpacing(.center)
+//                                .contentShape(.rect)
+//                                .onTapGesture {
+//                                    withAnimation(.snappy) {
+//                                        taskColor = color
+//                                    }
+//                                }
+//                        }
+//                    }
+//                })
                 
             }
             .padding(.top, 5)
@@ -116,7 +118,7 @@ struct NewTaskView: View {
                 /// Saving Data with Firebase
                 saveMedicationFirebase()
                 /// Saving Data with SwiftData
-                let task = Task(taskTitle: taskTitle, creationDate: taskDate, tint: taskColor)
+                let task = Task(taskTitle: taskTitle, creationDate: taskDate/*, tint: taskColor*/)
                 do {
                     context.insert(task)
                     try context.save()
@@ -131,7 +133,7 @@ struct NewTaskView: View {
                     .foregroundStyle(.black)
                     .hSpacing(.center)
                     .padding(.vertical, 12)
-                    .background(Color(taskColor), in: .rect(cornerRadius: 10))
+                    .background(Color(.purple.opacity(0.8)), in: .rect(cornerRadius: 10))
             })
             .disabled(taskTitle == "")
             .opacity(taskTitle == "" ? 0.5 : 1)
@@ -152,7 +154,7 @@ struct NewTaskView: View {
         let taskData: [String: Any] = [
             "taskTitle": taskTitle,
             "taskDate": Timestamp(date: taskDate),
-            "tint": taskColor,
+            // "tint": taskColor,
             "taskComplete": taskComplete,
             // "dosage": taskDosage
         ]

@@ -45,22 +45,25 @@ struct TaskRowView: View {
                                     Rectangle()
                                         .fill(Color.black)
                                         .frame(height: 2)
-                                        .offset(y: 6)
+                                        .offset(y: 0)
                                 ) : AnyView(EmptyView())
                             )
 
                         /// Time
                         Label(task.creationDate.format("hh:mm a"), systemImage: "clock")
                             .font(.custom("OpenSans-Regular", size: 11))
-                            .foregroundStyle(.black)
+                            .foregroundStyle(
+                                (!task.isCompleted && task.creationDate < Date()) ? Color.red : Color.black.opacity(0.8)
+                            )
                             .overlay(
                                 task.isCompleted ? AnyView(
                                     Rectangle()
                                         .fill(Color.black)
                                         .frame(height: 2)
-                                        .offset(y: 5)
+                                        .offset(y: 0)
                                 ) : AnyView(EmptyView())
                             )
+
                     }
 
                     Spacer()
@@ -86,7 +89,7 @@ struct TaskRowView: View {
             }
             .padding(15)
             .hSpacing(.leading)
-            .background(task.tintColor, in: .rect(topLeadingRadius: 15, bottomLeadingRadius: 15))
+            .background(backgroundColor, in: .rect(topLeadingRadius: 15, bottomLeadingRadius: 15))
             .offset(y: -8)
         }
         .hSpacing(.leading)
@@ -103,6 +106,19 @@ struct TaskRowView: View {
         }
         return task.creationDate.isSameHour ? .darkBlue : (task.creationDate.isPast ? .red : .black)
     }
+    
+    var backgroundColor: Color {
+        if task.isCompleted {
+            return .green.opacity(0.2)
+        } else if task.creationDate.isToday {
+            return .blue.opacity(0.2)
+        } else if task.creationDate.isPast {
+            return .red.opacity(0.2)
+        } else {
+            return .gray.opacity(0.2)
+        }
+    }
+
 }
 
 #Preview {
