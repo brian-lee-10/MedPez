@@ -132,20 +132,71 @@ struct ContentView: View {
 }
 
 struct NextDoseCard: View {
+    @State private var nextDoseTime: Date? = nil
+    @State private var noUpcomingDose = false
+
     var body: some View {
         HStack {
             Text("Next Dose")
                 .font(.custom("OpenSans-Regular", size: 24))
                 .foregroundColor(.white)
-            Text("2:00 PM")
-                .font(.custom("OpenSans-Bold", size: 32))
-                .bold()
-                .foregroundColor(.white)
+            
+            if noUpcomingDose {
+                Text("None")
+                    .font(.custom("OpenSans-Bold", size: 32))
+                    .bold()
+                    .foregroundColor(.white)
+            } else if let nextDoseTime = nextDoseTime {
+                Text(nextDoseTime.formatted(date: .omitted, time: .shortened))
+                    .font(.custom("OpenSans-Bold", size: 32))
+                    .bold()
+                    .foregroundColor(.white)
+            } else {
+                Text("--:--")
+                    .font(.custom("OpenSans-Bold", size: 32))
+                    .bold()
+                    .foregroundColor(.white)
+            }
         }
         .padding()
         .frame(maxWidth: .infinity, minHeight: 100)
         .background(Color.green)
         .cornerRadius(16)
+        .onAppear {
+            fetchNextDoseTime()
+        }
+    }
+    
+    private func fetchNextDoseTime() {
+        guard let user = Auth.auth().currentUser else { return }
+        let db = Firestore.firestore()
+        let now = Timestamp(date: Date())
+        
+        db.collection("users")
+            .document(user.uid)
+            .collection("medications")
+            .whereField("taskDate", isGreaterThanOrEqualTo: now)
+            .order(by: "taskDate", descending: false)
+            .limit(to: 1)
+            .getDocuments { snapshot, error in
+                if let error = error {
+                    print("Error fetching next dose: \(error.localizedDescription)")
+                    return
+                }
+                
+                if let document = snapshot?.documents.first,
+                   let timestamp = document.data()["taskDate"] as? Timestamp {
+                    DispatchQueue.main.async {
+                        self.nextDoseTime = timestamp.dateValue()
+                        self.noUpcomingDose = false
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        self.noUpcomingDose = true
+                        self.nextDoseTime = nil
+                    }
+                }
+            }
     }
 }
 
