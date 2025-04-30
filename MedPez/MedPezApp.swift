@@ -28,8 +28,12 @@ struct MedPezApp: App {
         WindowGroup {
             NavigationView {
                 if isUserLoggedIn {
-                    MainTabView()
+//                    MainTabView()
+//                        .preferredColorScheme(.light)
+                    
+                    ContentView()
                         .preferredColorScheme(.light)
+
                 } else {
                     LoginView()
                         .background(.BG)
