@@ -135,7 +135,7 @@ struct BluetoothView: View {
                         .foregroundColor(.white)
                         .padding()
                         .frame(maxWidth: .infinity)
-                        .background(Color.purple)
+                        .background(Color.red)
                         .cornerRadius(14)
                     }
                     .padding()
@@ -163,7 +163,7 @@ struct BluetoothView: View {
                         .foregroundColor(.white)
                         .padding()
                         .frame(maxWidth: .infinity)
-                        .background(Color.blue)
+                        .background(Color("SlateBlue"))
                         .cornerRadius(14)
                     }
                     .padding()

@@ -28,7 +28,7 @@ struct LoginView: View {
                     }
                     .frame(maxWidth: .infinity)
                     .frame(height: 130)
-                    .background(Color.purple)
+                    .background(Color("SlateBlue"))
                     .edgesIgnoringSafeArea(.top)
                     
                     Spacer()
@@ -118,7 +118,7 @@ struct LoginView: View {
                             .font(.custom("OpenSans-Bold", size: 20))
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 20)
-                            .background(Color.purple)
+                            .background(Color("SlateBlue"))
                             .foregroundColor(.white)
                             .cornerRadius(30)
                     }

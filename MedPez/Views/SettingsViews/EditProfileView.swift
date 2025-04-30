@@ -61,7 +61,7 @@ struct EditProfileView: View {
                             .font(.custom("OpenSans-Bold", size: 20))
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 15)
-                            .background(Color.purple)
+                            .background(Color("SlateBlue"))
                             .foregroundColor(.white)
                             .cornerRadius(30)
                     }
@@ -73,7 +73,7 @@ struct EditProfileView: View {
                             .font(.custom("OpenSans-Bold", size: 20))
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 15)
-                            .background(Color.purple)
+                            .background(Color("SlateBlue"))
                             .foregroundColor(.white)
                             .cornerRadius(30)
                     }

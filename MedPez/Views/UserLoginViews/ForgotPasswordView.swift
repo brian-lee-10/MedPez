@@ -24,7 +24,7 @@ struct ForgotPasswordView: View {
             }
             .frame(maxWidth: .infinity)
             .frame(height: 130)
-            .background(Color.purple) 
+            .background(Color("SlateBlue"))
             .edgesIgnoringSafeArea(.top)
             
             Text("Change Password")
@@ -57,7 +57,7 @@ struct ForgotPasswordView: View {
                     .font(.custom("OpenSans-Bold", size: 20))
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 20)
-                    .background(Color.purple)
+                    .background(Color("SlateBlue"))
                     .foregroundColor(.white)
                     .cornerRadius(30)
             }

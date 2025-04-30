@@ -42,7 +42,7 @@ struct LogView: View {
                     .fontWeight(.semibold)
                     .foregroundStyle(.white)
                     .frame(width: 55, height: 55)
-                    .background(.darkBlue, in: .circle)
+                    .background(Color("SlateBlue"), in: .circle)
             })
             .padding(15)
         })
@@ -80,7 +80,7 @@ struct LogView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(currentDate.formatted(.dateTime.weekday(.wide)))
                         .font(.custom("OpenSans-Bold", size: 30))
-                        .foregroundStyle(.darkBlue)
+                        .foregroundStyle(Color("SlateBlue"))
                     
                     Text(currentDate.formatted(.dateTime.month().day().year()))
                         .font(.custom("OpenSans-Regular", size: 28))
@@ -108,7 +108,7 @@ struct LogView: View {
                             .font(.custom("OpenSans-Regular", size: 16))
                             .fontWeight(.bold)
                             .padding(8)
-                            .background(.darkBlue)
+                            .background(Color("SlateBlue"))
                             .foregroundColor(.white)
                             .clipShape(Capsule())
                     })
@@ -158,12 +158,12 @@ struct LogView: View {
                         .background(content: {
                             if isSameDate(day.date, currentDate) {
                                 Circle()
-                                    .fill(.darkBlue)
+                                    .fill(Color("SlateBlue"))
                                     .matchedGeometryEffect(id: "TABINDICATOR", in: animation)
                             }
                             if day.date.isToday {
                                 Circle()
-                                    .fill(.cyan)
+                                    .fill(Color("SlateBlue"))
                                     .frame(width: 5, height: 5)
                                     .vSpacing(.bottom)
                                     .offset(y: 12)

@@ -31,7 +31,7 @@ struct RegisterView: View {
             }
             .frame(maxWidth: .infinity)
             .frame(height: 130)
-            .background(Color.purple)
+            .background(Color("SlateBlue"))
             .edgesIgnoringSafeArea(.top)
             
             ScrollView {
@@ -126,7 +126,7 @@ struct RegisterView: View {
                         .font(.custom("OpenSans-Bold", size: 20))
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 20)
-                        .background(Color.purple)
+                        .background(Color("SlateBlue"))
                         .foregroundColor(.white)
                         .cornerRadius(30)
                 }
@@ -151,7 +151,7 @@ struct RegisterView: View {
         .alert(isPresented: $showAlert) {
             Alert(title: Text("Registration"), message: Text(alertMessage), dismissButton: .default(Text("OK")) {
                 if alertMessage == "Registration successful!" {
-                    presentationMode.wrappedValue.dismiss()  // <-- Go back to LoginView
+                    isLoggedIn = true
                 }
             })
         }

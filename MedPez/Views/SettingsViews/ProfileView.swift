@@ -36,7 +36,7 @@ struct ProfileView: View {
                         .font(.custom("OpenSans-Bold", size: 20))
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.purple)
+                        .background(Color("SlateBlue"))
                         .foregroundColor(.white)
                         .cornerRadius(8)
                 }
