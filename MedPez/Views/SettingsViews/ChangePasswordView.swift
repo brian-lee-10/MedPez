@@ -15,9 +15,21 @@ struct ChangePasswordView: View {
     @State private var errorMessage: String?
     @State private var showSuccessAlert = false
     @State private var showConfirmationAlert = false
+    
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         VStack(spacing: 20) {
+            Button(action: {
+                dismiss()
+            }, label: {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.title)
+                    .tint(.red)
+            })
+            .hSpacing(.leading)
+            .padding(.horizontal)
+            
             Text("Change Password")
                 .font(.custom("OpenSans-Bold", size: 28))
                 .padding(.top, 20)

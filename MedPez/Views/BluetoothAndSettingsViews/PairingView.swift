@@ -12,10 +12,23 @@ import CoreBluetooth
 
 struct PairingView: View {
     @ObservedObject var bluetoothManager: BluetoothManager
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         NavigationView {
             VStack(spacing: 20) {
+                
+                Button(action: {
+                    dismiss()
+                }, label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.title)
+                        .tint(.red)
+                })
+                .hSpacing(.leading)
+                .padding(.horizontal)
+                
+                
                 Text("Select a device to pair")
                     .font(.headline)
                     .padding()
