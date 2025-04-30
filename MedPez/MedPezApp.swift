@@ -27,10 +27,7 @@ struct MedPezApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationView {
-                if isUserLoggedIn {
-//                    MainTabView()
-//                        .preferredColorScheme(.light)
-                    
+                if isUserLoggedIn {                    
                     ContentView()
                         .preferredColorScheme(.light)
 
