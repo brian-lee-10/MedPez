@@ -274,7 +274,7 @@ struct MyCalendarCard: View {
         Button(action: { showCalendar = true }) {
             VStack(alignment: .leading, spacing: 6) {
                 Text("My Calendar")
-                    .font(.custom("OpenSans-Regular", size: 18))
+                    .font(.custom("OpenSans-Regular", size: 22))
                     .foregroundColor(.white)
                 Image(systemName: "calendar")
                     .resizable()
@@ -283,7 +283,7 @@ struct MyCalendarCard: View {
                     .foregroundColor(.white)
             }
             .padding(.top, 5)
-            .frame(maxWidth: .infinity, minHeight: 100)
+            .frame(maxWidth: .infinity, minHeight: 120)
             .background(Color("SlateBlue"))
             .cornerRadius(16)
         }
@@ -308,7 +308,7 @@ struct MyDeviceCard: View {
             }
             .padding()
             .frame(maxWidth: .infinity)
-            .frame(minHeight: 220, maxHeight: 220)
+            .frame(minHeight: 256, maxHeight: 256)
             .background(Color("Smoke"))
             .cornerRadius(16)
             .overlay(
@@ -382,7 +382,7 @@ struct PillsLeftInMedPezCard: View {
                 .foregroundColor(.white)
         }
         .padding()
-        .frame(maxWidth: .infinity, minHeight: 100)
+        .frame(maxWidth: .infinity, minHeight: 120)
         .background(Color("Jade"))
         .cornerRadius(16)
     }
