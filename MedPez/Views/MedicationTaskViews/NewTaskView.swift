@@ -40,7 +40,7 @@ struct NewTaskView: View {
                     .font(.custom("OpenSans-Bold", size:16))
                     .foregroundStyle(.black)
                 
-                TextField("Enter Medication Name...", text: $taskTitle)
+                TextField("Enter Medication Name", text: $taskTitle)
                     .padding(.vertical, 12)
                     .padding(.horizontal, 15)
                     .background(.white.shadow(.drop(color: .black.opacity(0.25), radius: 2)), in: .rect(cornerRadius: 10))
@@ -80,11 +80,11 @@ struct NewTaskView: View {
                 .padding(.trailing, -15)
                 
                 VStack(alignment: .leading, spacing: 8, content: {
-                    Text("Dosage")
+                    Text("Dosage (mg)")
                         .font(.custom("OpenSans-Bold", size:16))
                         .foregroundStyle(.black)
                     
-                    TextField("Enter Dosage...", text: $taskDosage)
+                    TextField("Enter Dosage", text: $taskDosage)
                         .keyboardType(.decimalPad)
                         .padding(.vertical, 12)
                         .padding(.horizontal, 15)
