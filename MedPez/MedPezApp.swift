@@ -37,6 +37,7 @@ struct MedPezApp: App {
                         .preferredColorScheme(.light)
                 }
             }
+            .modelContainer(for: Task.self)
             .onAppear {
                 checkAuthState()
             }
