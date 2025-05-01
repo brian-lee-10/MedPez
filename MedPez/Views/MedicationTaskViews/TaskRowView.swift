@@ -26,6 +26,7 @@ struct TaskRowView: View {
                         .contentShape(.circle)
                         .frame(width: 50, height: 50)
                         .onTapGesture {
+                            /// task auto complete
                             withAnimation(.snappy) {
                                 task.isCompleted.toggle()
                             }
@@ -77,13 +78,13 @@ struct TaskRowView: View {
 //                            .font(.custom("OpenSans-Regular", size: 14))
 //                            .foregroundStyle(.black.opacity(0.8))
 //                    }
-                    Text("Dosage: \(task.dosage) mg")
-                        .font(.custom("OpenSans-Regular", size: 14))
+                    Text("\(task.dosage) mg")
+                        .font(.custom("OpenSans-Regular", size: 16))
                         .foregroundStyle(.black.opacity(0.8))
 
-                    Text("Pills: \(task.numberOfPills)")
-                        .font(.custom("OpenSans-Regular", size: 14))
-                        .foregroundStyle(.black.opacity(0.8))
+//                    Text("Pills: \(task.numberOfPills)")
+//                        .font(.custom("OpenSans-Regular", size: 14))
+//                        .foregroundStyle(.black.opacity(0.8))
                     
                     Spacer()
 
