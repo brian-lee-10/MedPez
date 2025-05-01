@@ -4,10 +4,10 @@ import FirebaseFirestore
 
 struct RegisterView: View {
     @Binding var isLoggedIn: Bool
-    @State private var name = ""
     @State private var birthdate = Date()
     @State private var email = ""
     @State private var password = ""
+    @State private var isPasswordVisible = false
     @State private var showAlert = false
     @State private var alertMessage = ""
     @FocusState private var isPasswordFocused: Bool
@@ -34,108 +34,105 @@ struct RegisterView: View {
             .background(Color("SlateBlue"))
             .edgesIgnoringSafeArea(.top)
             
-            ScrollView {
-                Text("Get Started")
-                    .font(.custom("OpenSans-Bold", size: 30))
-                    .padding(.horizontal, 30)
-                
-                Text("Create your account below.")
+            Text("Get Started")
+                .font(.custom("OpenSans-Bold", size: 30))
+                .padding(.horizontal, 30)
+            
+            Text("Create your account below.")
+                .font(.custom("OpenSans-Regular", size: 17))
+                .padding(.vertical, 2)
+                .padding(.horizontal, 30)
+            
+            /// Email Field
+            VStack(alignment: .leading, spacing: 5) {
+                Text("Email Address")
+                    .font(.custom("OpenSans-Bold", size: 17))
+                TextField("Enter your email...", text: $email)
                     .font(.custom("OpenSans-Regular", size: 17))
-                    .padding(.vertical, 2)
-                    .padding(.horizontal, 30)
-                
-                // Name Field
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("Full Name")
-                        .font(.custom("OpenSans-Bold", size: 17))
-                    TextField("Enter your full name...", text: $name)
-                        .font(.custom("OpenSans-Regular", size: 17))
-                        .padding()
-                        .cornerRadius(8)
-                        .background(Color.white)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color.gray, lineWidth: 1) // Grey border
-                        )
-                }
-                .padding(.horizontal, 30)
-                
-                /// Email Field
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("Email Address")
-                        .font(.custom("OpenSans-Bold", size: 17))
-                    TextField("Enter your email...", text: $email)
-                        .font(.custom("OpenSans-Regular", size: 17))
-                        .keyboardType(.emailAddress)
-                        .autocapitalization(.none)
-                        .padding()
-                        .cornerRadius(8)
-                        .background(Color.white)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color.gray, lineWidth: 1) // Grey border
-                        )
-                }
-                .padding(.horizontal, 30)
-                
-                /// Password Field
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("Password")
-                        .font(.custom("OpenSans-Bold", size: 17))
-                    /// Password Requirements List
-                    if isPasswordFocused {
-                        HStack {
-                            VStack{
-                                Label("At least 1 uppercase character", systemImage: hasUppercase ? "checkmark.circle.fill" : "xmark.circle")
-                                    .foregroundColor(hasUppercase ? .green : .red)
-                                
-                                Label("At least 1 number", systemImage: hasNumber ? "checkmark.circle.fill" : "xmark.circle")
-                                    .foregroundColor(hasNumber ? .green : .red)
-                            }
-                            .font(.custom("OpenSans-Regular", size: 12))
+                    .keyboardType(.emailAddress)
+                    .autocapitalization(.none)
+                    .padding()
+                    .cornerRadius(8)
+                    .background(Color.white)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.gray, lineWidth: 1)
+                    )
+            }
+            .padding(.horizontal, 30)
+            
+            /// Password Field
+            VStack(alignment: .leading, spacing: 5) {
+                Text("Password")
+                    .font(.custom("OpenSans-Bold", size: 17))
+                /// Password Requirements List
+                if isPasswordFocused {
+                    HStack {
+                        VStack{
+                            Label("At least 1 uppercase letter", systemImage: hasUppercase ? "checkmark.circle.fill" : "xmark.circle")
+                                .foregroundColor(hasUppercase ? .green : .red)
                             
-                            VStack {
-                                Label("At least 1 lowercase character", systemImage: hasLowercase ? "checkmark.circle.fill" : "xmark.circle")
-                                    .foregroundColor(hasLowercase ? .green : .red)
-                                
-                                Label("Minimum 10 characters", systemImage: isLongEnough ? "checkmark.circle.fill" : "xmark.circle")
-                                    .foregroundColor(isLongEnough ? .green : .red)
-                            }
-                            .font(.custom("OpenSans-Regular", size: 12))
+                            Label("At least 1 lowercase letter", systemImage: hasLowercase ? "checkmark.circle.fill" : "xmark.circle")
+                                .foregroundColor(hasLowercase ? .green : .red)
                         }
+                        .font(.custom("OpenSans-Regular", size: 12))
+                        
+                        VStack {
+                            Label("At least 1 number", systemImage: hasNumber ? "checkmark.circle.fill" : "xmark.circle")
+                                .foregroundColor(hasNumber ? .green : .red)
+                            
+                            Label("Minimum 10 characters", systemImage: isLongEnough ? "checkmark.circle.fill" : "xmark.circle")
+                                .foregroundColor(isLongEnough ? .green : .red)
+                        }
+                        .font(.custom("OpenSans-Regular", size: 12))
+                    }
+                }
+                
+                HStack {
+                    if isPasswordVisible {
+                        TextField("Enter your password...", text: $password)
+                            .font(.custom("OpenSans-Regular", size: 17))
+                            .focused($isPasswordFocused)
+                    } else {
+                        SecureField("Enter your password...", text: $password)
+                            .font(.custom("OpenSans-Regular", size: 17))
+                            .focused($isPasswordFocused)
                     }
                     
-                    SecureField("Enter your password...", text: $password)
-                        .font(.custom("OpenSans-Regular", size: 17))
-                        .padding()
-                        .cornerRadius(8)
-                        .background(Color.white)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color.gray, lineWidth: 1)
-                        )
-                        .focused($isPasswordFocused)
-
-
+                    Button(action: { isPasswordVisible.toggle() }) {
+                        Image(systemName: isPasswordVisible ? "eye.slash.fill" : "eye.fill")
+                            .foregroundColor(.black)
+                            .padding(6)
+                    }
                 }
-                .padding(.horizontal, 30)
+                .padding()
+                .cornerRadius(8)
+                .background(Color.white)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.gray, lineWidth: 1)
+                )
                 
-                // Register Button
-                Button(action: { registerUser() }) {
-                    Text("Create Account")
-                        .font(.custom("OpenSans-Bold", size: 20))
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 20)
-                        .background(Color("SlateBlue"))
-                        .foregroundColor(.white)
-                        .cornerRadius(30)
-                }
-                .padding(.horizontal, 30)
-                .padding(.vertical, 5)
+                
+                
             }
+            .padding(.horizontal, 30)
+            
+            // Register Button
+            Button(action: { registerUser() }) {
+                Text("Create Account")
+                    .font(.custom("OpenSans-Bold", size: 20))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 20)
+                    .background(Color("SlateBlue"))
+                    .foregroundColor(.white)
+                    .cornerRadius(30)
+            }
+            .padding(.horizontal, 30)
+            .padding(.vertical, 5)
             Spacer()
         }
-//        .background(.BG)
+            
         .preferredColorScheme(.light)
         .navigationBarBackButtonHidden(true)
         .navigationBarItems(leading: Button(action: {
@@ -159,7 +156,7 @@ struct RegisterView: View {
     
     /// Register User Function
     private func registerUser() {
-        guard !name.isEmpty, !email.isEmpty, !password.isEmpty else {
+        guard !email.isEmpty, !password.isEmpty else {
             alertMessage = "All fields are required."
             showAlert = true
             return
@@ -176,8 +173,7 @@ struct RegisterView: View {
             
             let db = Firestore.firestore()
             db.collection("users").document(user.uid).setData([
-                "name": name,
-                "email": email,
+                "email": email
             ]) { error in
                 if let error = error {
                     alertMessage = "Error saving user data: \(error.localizedDescription)"
