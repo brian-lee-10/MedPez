@@ -22,9 +22,16 @@ struct ContentView: View {
                         Text("\(getGreeting())")
                             .font(.custom("OpenSans-Bold", size: 24))
                             .foregroundColor(.black)
-                        Text("\(name)")
-                            .font(.custom("OpenSans-Bold", size: 28))
-                            .foregroundColor(.black)
+                        
+                        if name != "User" && name != "Unknown" && !name.isEmpty {
+                            Text(name)
+                                .font(.custom("OpenSans-Bold", size: 28))
+                                .foregroundColor(.black)
+                        } else {
+                            Text("Ready to stay on track?")
+                                .font(.custom("OpenSans-Regular", size: 22))
+                                .foregroundColor(.black)
+                        }
                     }
 
                     Spacer()
@@ -113,7 +120,7 @@ struct ContentView: View {
             if let document = document, document.exists {
                 let data = document.data()
                 DispatchQueue.main.async {
-                    let fullName = data?["name"] as? String ?? "Unknown"
+                    let fullName = data?["name"] as? String ?? "User"
                     self.name = fullName.components(separatedBy: " ").first ?? fullName
                 }
             } else {
