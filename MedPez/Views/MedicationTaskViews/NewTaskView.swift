@@ -20,7 +20,7 @@ struct NewTaskView: View {
     @State private var taskDate: Date = .init()
     // @State private var taskColor: String = "TaskColor 1"
     @State private var taskDosage: String = ""
-    @State private var taskPills: String = ""
+    // @State private var taskPills: String = ""
     @State private var taskComplete: Bool = false
     
     var body: some View {
@@ -52,34 +52,6 @@ struct NewTaskView: View {
             /// Number of Pills Field
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 8, content: {
-                    Text("Number of Pills")
-                        .font(.custom("OpenSans-Bold", size:16))
-                        .foregroundStyle(.black)
-                    
-                    TextField("Enter Number of Pills", text: $taskPills)
-                        .keyboardType(.numberPad)
-                        .padding(.vertical, 12)
-                        .padding(.horizontal, 15)
-                        .background(.white.shadow(.drop(color: .black.opacity(0.25), radius: 2)), in: .rect(cornerRadius: 10))
-                })
-                .padding(.top, 5)
-            }
-            
-            /// Date and Task Color
-            HStack(spacing: 12) {
-                VStack(alignment: .leading, spacing: 8, content: {
-                    Text("Date")
-                        .font(.custom("OpenSans-Bold", size:16))
-                        .foregroundStyle(.black)
-                    
-                    DatePicker("", selection: $taskDate)
-                        .datePickerStyle(.compact)
-                        .scaleEffect(0.9, anchor: .leading)
-                })
-                /// Giving Some Space for tapping
-                .padding(.trailing, -15)
-                
-                VStack(alignment: .leading, spacing: 8, content: {
                     Text("Dosage (mg)")
                         .font(.custom("OpenSans-Bold", size:16))
                         .foregroundStyle(.black)
@@ -90,36 +62,28 @@ struct NewTaskView: View {
                         .padding(.horizontal, 15)
                         .background(.white.shadow(.drop(color: .black.opacity(0.25), radius: 2)), in: .rect(cornerRadius: 10))
                 })
+            }
+            
+            /// Date and Task Color
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 8, content: {
+                    Text("Date")
+                        .font(.custom("OpenSans-Bold", size:16))
+                        .foregroundStyle(.black)
+                    
+                    HStack {
+                        DatePicker("", selection: $taskDate)
+                            .datePickerStyle(.compact)
+                            .labelsHidden()
+                        Spacer()
+                    }
+                    .scaleEffect(0.9, anchor: .leading)
+
+                })
+                /// Giving Some Space for tapping
+                .padding(.trailing, -15)
                 
-//                VStack(alignment: .leading, spacing: 8, content: {
-//                    Text("Task Color")
-//                        .font(.custom("OpenSans-Regular", size:16))
-//                        .foregroundStyle(.gray)
-//                    
-//                    let colors: [String] = (1...5).compactMap {index -> String in
-//                        return "TaskColor \(index)"
-//                    }
-//                    
-//                    HStack(spacing: 0) {
-//                        ForEach(colors, id: \.self) { color in
-//                            Circle()
-//                                .fill(Color(color))
-//                                .frame(width: 20, height: 20)
-//                                .background(content: {
-//                                    Circle()
-//                                        .stroke(lineWidth: 2)
-//                                        .opacity(taskColor == color ? 1 : 0)
-//                                })
-//                                .hSpacing(.center)
-//                                .contentShape(.rect)
-//                                .onTapGesture {
-//                                    withAnimation(.snappy) {
-//                                        taskColor = color
-//                                    }
-//                                }
-//                        }
-//                    }
-//                })
+                Spacer()
                 
             }
             .padding(.top, 5)
@@ -131,8 +95,8 @@ struct NewTaskView: View {
                 saveMedicationFirebase()
                 /// Saving Data with SwiftData
                 let task = Task(taskTitle: taskTitle, creationDate: taskDate,
-                    dosage: taskDosage,
-                    numberOfPills: Int(taskPills) ?? 0
+                    dosage: taskDosage/*,
+                    numberOfPills: Int(taskPills) ?? 0*/
                     /*, tint: taskColor*/)
                 do {
                     context.insert(task)
@@ -144,14 +108,14 @@ struct NewTaskView: View {
             }, label: {
                 Text("Add Medication")
                     .font(.custom("OpenSans-Bold", size: 22))
-                    .textScale(.secondary)
-                    .foregroundStyle(.black)
+                    .foregroundStyle(.white)
                     .hSpacing(.center)
                     .padding(.vertical, 12)
-                    .background(Color(.purple.opacity(0.8)), in: .rect(cornerRadius: 10))
+                    .background(Color("SlateBlue"), in: .rect(cornerRadius: 10))
+
             })
             .disabled(taskTitle == "")
-            .opacity(taskTitle == "" ? 0.5 : 1)
+            // .opacity(taskTitle == "" ? 0.5 : 1)
             
             
         })
@@ -169,10 +133,8 @@ struct NewTaskView: View {
         let taskData: [String: Any] = [
             "taskTitle": taskTitle,
             "taskDate": Timestamp(date: taskDate),
-            // "tint": taskColor,
             "taskComplete": taskComplete,
             "dosage": taskDosage,
-            "numberOfPills": Int(taskPills) ?? 0
         ]
         
         db.collection("users")
