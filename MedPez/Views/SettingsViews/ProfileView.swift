@@ -82,7 +82,7 @@ struct ProfileView: View {
             if let document = document, document.exists {
                 let data = document.data()
                 DispatchQueue.main.async {
-                    self.name = data?["name"] as? String ?? "Unknown"
+                    self.name = data?["name"] as? String ?? "User"
                     self.email = data?["email"] as? String ?? "Unknown"
                 }
             } else {
