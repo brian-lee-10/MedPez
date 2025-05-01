@@ -41,10 +41,10 @@ struct ChangePasswordView: View {
                 
                 HStack {
                     VStack{
-                        Label("At least 1 uppercase character", systemImage: hasUppercase ? "checkmark.circle.fill" : "xmark.circle")
+                        Label("At least 1 uppercase letter", systemImage: hasUppercase ? "checkmark.circle.fill" : "xmark.circle")
                             .foregroundColor(hasUppercase ? .green : .red)
                         
-                        Label("At least 1 lowercase character", systemImage: hasLowercase ? "checkmark.circle.fill" : "xmark.circle")
+                        Label("At least 1 lowercase letter", systemImage: hasLowercase ? "checkmark.circle.fill" : "xmark.circle")
                             .foregroundColor(hasLowercase ? .green : .red)
                     }
                     .font(.custom("OpenSans-Regular", size: 12))
