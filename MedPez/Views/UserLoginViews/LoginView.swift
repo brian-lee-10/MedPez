@@ -12,7 +12,7 @@ struct LoginView: View {
         NavigationView {
             VStack(spacing: 20) {
                 if isLoggedIn {
-                    MainTabView()
+                    ContentView()
                 } else {
                     HStack {
                         Image(systemName: "pill")
