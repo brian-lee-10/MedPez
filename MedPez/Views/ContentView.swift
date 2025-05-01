@@ -16,16 +16,16 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             // Greeting and Date Header
-            VStack(spacing: 8) {
+            VStack(spacing: 2) {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("\(getGreeting())")
-                            .font(.custom("OpenSans-Bold", size: 24))
+                            .font(.custom("OpenSans-Bold", size: 28))
                             .foregroundColor(.black)
                         
                         if name != "User" && name != "Unknown" && !name.isEmpty {
                             Text(name)
-                                .font(.custom("OpenSans-Bold", size: 28))
+                                .font(.custom("OpenSans-Bold", size: 30))
                                 .foregroundColor(.black)
                         } else {
                             Text("Ready to stay on track?")
@@ -42,7 +42,7 @@ struct ContentView: View {
                         Image(systemName: "person.crop.circle")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .frame(width: 37, height: 37)
+                            .frame(width: 42, height: 42)
                             .foregroundColor(.black)
                     }
                 }
@@ -92,9 +92,7 @@ struct ContentView: View {
         }
         .onAppear {
             loadProfile()
-        }
-        .onAppear {
-            fetchRemainingPillsForToday()
+            startListeningToRemainingPills()
         }
 
         .navigationBarHidden(true)
@@ -129,11 +127,10 @@ struct ContentView: View {
         }
     }
     
-    private func fetchRemainingPillsForToday() {
+    private func startListeningToRemainingPills() {
         guard let user = Auth.auth().currentUser else { return }
         let db = Firestore.firestore()
         
-        // Get today's date range (00:00 today to 00:00 tomorrow)
         let today = Calendar.current.startOfDay(for: Date())
         let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
 
@@ -142,9 +139,9 @@ struct ContentView: View {
             .collection("medications")
             .whereField("taskDate", isGreaterThanOrEqualTo: Timestamp(date: today))
             .whereField("taskDate", isLessThan: Timestamp(date: tomorrow))
-            .getDocuments { snapshot, error in
+            .addSnapshotListener { snapshot, error in
                 if let error = error {
-                    print("Error fetching tasks: \(error.localizedDescription)")
+                    print("Error listening to tasks: \(error.localizedDescription)")
                     return
                 }
 
@@ -154,12 +151,12 @@ struct ContentView: View {
                     return !isCompleted
                 }
 
-                // Update state
                 DispatchQueue.main.async {
                     self.remainingPillsToday = uncompletedTasks.count
                 }
             }
     }
+
 }
 
 struct NextDoseCard: View {
@@ -205,17 +202,23 @@ struct NextDoseCard: View {
             
             Spacer()
             
-            HStack {
+            VStack {
                 Text(formatNextDoseTime())
                     .font(.custom("OpenSans-Bold", size: 60))
                     .foregroundColor(Color("SlateBlue"))
+                
                 Spacer()
                 
+                if isOverdue {
+                    Label("OVERDUE", systemImage: "exclamationmark.triangle.fill")
+                        .font(.custom("OpenSans-Bold", size: 20))
+                        .foregroundColor(.red)
+                }
             }
         }
         .padding()
         .frame(maxWidth: .infinity)
-        .frame(minHeight: 200, maxHeight:200)
+        .frame(minHeight: 220, maxHeight:220)
         .background(Color("Night"))
         .cornerRadius(16)
         .onAppear {
@@ -232,6 +235,13 @@ struct NextDoseCard: View {
         return formatter.string(from: nextDoseTime)
     }
     
+    private var isOverdue: Bool {
+        if let time = nextDoseTime {
+            return time < Date()
+        }
+        return false
+    }
+    
     private var currentDateFormatted: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "EEEE, MMMM d"
@@ -241,26 +251,28 @@ struct NextDoseCard: View {
     private func fetchNextDoseTime() {
         guard let user = Auth.auth().currentUser else { return }
         let db = Firestore.firestore()
-        let now = Timestamp(date: Date())
-
+        
+        let startOfToday = Calendar.current.startOfDay(for: Date())
+        
         db.collection("users")
             .document(user.uid)
             .collection("medications")
-            .whereField("taskDate", isGreaterThanOrEqualTo: now)
+            .whereField("taskDate", isGreaterThanOrEqualTo: Timestamp(date: startOfToday))
             .order(by: "taskDate", descending: false)
-            .limit(to: 1)
             .getDocuments { snapshot, error in
                 if let error = error {
-                    print("Error fetching next dose: \(error.localizedDescription)")
+                    print("Error fetching doses: \(error.localizedDescription)")
                     return
                 }
-                
-                if let document = snapshot?.documents.first,
-                   let timestamp = document.data()["taskDate"] as? Timestamp {
+
+                let documents = snapshot?.documents ?? []
+
+                // Filter: Only unfinished tasks
+                if let nextTask = documents.first(where: { !($0.data()["taskComplete"] as? Bool ?? false) }) {
                     DispatchQueue.main.async {
-                        self.nextDoseTime = timestamp.dateValue()
-                        self.nextDoseName = document.data()["taskTitle"] as? String ?? ""
-                        self.nextDoseDosage = document.data()["dosage"] as? String ?? ""
+                        self.nextDoseTime = (nextTask.data()["taskDate"] as? Timestamp)?.dateValue()
+                        self.nextDoseName = nextTask.data()["taskTitle"] as? String ?? ""
+                        self.nextDoseDosage = nextTask.data()["dosage"] as? String ?? ""
                         self.noUpcomingDose = false
                     }
                 } else {
@@ -271,7 +283,6 @@ struct NextDoseCard: View {
                 }
             }
     }
-
 }
 
 struct MyCalendarCard: View {
