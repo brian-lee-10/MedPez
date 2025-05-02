@@ -11,6 +11,7 @@ struct ContentView: View {
     @State private var remainingPillsToday: Int = 0
     @EnvironmentObject var bluetoothManager: BluetoothManager
 
+    @AppStorage("hasSeenDisclaimer") private var hasSeenDisclaimer: Bool = false
     
     let gridItems = [GridItem(.flexible()), GridItem(.flexible())]
     
@@ -93,11 +94,16 @@ struct ContentView: View {
             }
             Spacer()
         }
+        .fullScreenCover(isPresented: .constant(!hasSeenDisclaimer)) {
+            MedicalDisclaimerView {
+                saveDisclaimerAcceptance()
+                hasSeenDisclaimer = true
+            }
+        }
         .onAppear {
             loadProfile()
             startListeningToRemainingPills()
         }
-
         .navigationBarHidden(true)
     }
 
@@ -158,6 +164,18 @@ struct ContentView: View {
                     self.remainingPillsToday = uncompletedTasks.count
                 }
             }
+    }
+    
+    func saveDisclaimerAcceptance() {
+        guard let user = Auth.auth().currentUser else { return }
+
+        let db = Firestore.firestore()
+        db.collection("users")
+            .document(user.uid)
+            .setData([
+                "disclaimerAccepted": true,
+                "disclaimerAcceptedDate": FieldValue.serverTimestamp()
+            ], merge: true)
     }
 
 }
