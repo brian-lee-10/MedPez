@@ -92,8 +92,6 @@ struct SettingsView: View {
                     Text("This action will permanently delete your account, including all medical data and profile information. This data cannot be recovered.")
                 }
 
-
-
                 Section {
                     Button(action: {
                         showLogoutAlert = true
