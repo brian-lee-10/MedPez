@@ -28,11 +28,11 @@ struct ChangePasswordView: View {
                     .tint(.red)
             })
             .hSpacing(.leading)
-            .padding(.horizontal)
+            .padding()
             
             Text("Change Password")
                 .font(.custom("OpenSans-Bold", size: 28))
-                .padding(.top, 20)
+                .padding(.top, 5)
             
             /// Password Requirements List
             VStack(alignment: .leading, spacing: 5) {
@@ -95,7 +95,7 @@ struct ChangePasswordView: View {
                     .font(.custom("OpenSans-Bold", size: 20))
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 15)
-                    .background(Color.purple)
+                    .background(Color("SlateBlue"))
                     .foregroundColor(.white)
                     .cornerRadius(30)
             }
