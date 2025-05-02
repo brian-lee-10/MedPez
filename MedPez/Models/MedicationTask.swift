@@ -15,13 +15,15 @@ class Task: Identifiable {
     var creationDate: Date
     var isCompleted: Bool
     var dosage: String
+    var firebaseId: String?
     
-    init(id: UUID = .init(), taskTitle: String, creationDate: Date = .init(), isCompleted: Bool = false, dosage: String) {
+    init(id: UUID = .init(), taskTitle: String, creationDate: Date = .init(), isCompleted: Bool = false, dosage: String, firebaseId: String? = nil) {
         self.id = id
         self.taskTitle = taskTitle
         self.creationDate = creationDate
         self.isCompleted = isCompleted
         self.dosage = dosage
+        self.firebaseId = firebaseId
     }
 }
 
