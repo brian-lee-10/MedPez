@@ -35,7 +35,6 @@ struct MedPezApp: App {
                 }
                 else if isUserLoggedIn {
                     ContentView()
-                        .environmentObject(bluetoothManager)
                         .preferredColorScheme(.light)
 
                 } else {
@@ -44,6 +43,7 @@ struct MedPezApp: App {
                         .preferredColorScheme(.light)
                 }
             }
+            .environmentObject(bluetoothManager)
             .modelContainer(for: Task.self)
             .onAppear {
                 checkAuthState()
