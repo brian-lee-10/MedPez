@@ -11,6 +11,7 @@ struct RegisterView: View {
     @State private var showAlert = false
     @State private var alertMessage = ""
     @FocusState private var isPasswordFocused: Bool
+    @State private var goToOnboarding = false
     
     @Environment(\.presentationMode) var presentationMode  // <-- Add this
     
