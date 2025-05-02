@@ -9,6 +9,7 @@ struct ContentView: View {
     @State private var showProfile = false
     @State private var showBluetooth = false
     @State private var remainingPillsToday: Int = 0
+    @EnvironmentObject var bluetoothManager: BluetoothManager
 
     
     let gridItems = [GridItem(.flexible()), GridItem(.flexible())]
@@ -59,7 +60,9 @@ struct ContentView: View {
                 HStack {
                     VStack (spacing: 16) {
                         MyCalendarCard(showCalendar: $showCalendar)
-                        PillsLeftInMedPezCard(pillsLeft: 14)
+                        // PillsLeftInMedPezCard(pillsLeft: Int(bluetoothManager.receivedData) ?? 0)
+                        PillsLeftInMedPezCard(pillsLeft: bluetoothManager.pillCount)
+
                     }
                     MyDeviceCard(showBluetooth: $showBluetooth)
                 }
