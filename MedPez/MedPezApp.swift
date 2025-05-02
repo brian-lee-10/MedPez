@@ -23,12 +23,19 @@ struct MedPezApp: App {
     // Register app delegate for Firebase setup
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @State private var isUserLoggedIn = false
+    @AppStorage("hasSeenOnboarding") private var hasSeenOnboarding = false
+    @StateObject var bluetoothManager = BluetoothManager()
 
     var body: some Scene {
         WindowGroup {
             NavigationView {
-                if isUserLoggedIn {                    
+                if !hasSeenOnboarding {
+                    OnboardingView()
+                        .preferredColorScheme(.light)
+                }
+                else if isUserLoggedIn {
                     ContentView()
+                        .environmentObject(bluetoothManager)
                         .preferredColorScheme(.light)
 
                 } else {
