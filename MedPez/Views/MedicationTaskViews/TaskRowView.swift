@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import FirebaseAuth
+import FirebaseFirestore
 
 struct TaskRowView: View {
     @Bindable var task: Task
@@ -26,9 +28,9 @@ struct TaskRowView: View {
                         .contentShape(.circle)
                         .frame(width: 50, height: 50)
                         .onTapGesture {
-                            /// task auto complete
                             withAnimation(.snappy) {
                                 task.isCompleted.toggle()
+                                updateTaskCompletionInFirebase(to: task.isCompleted)
                             }
                         }
                 }
@@ -69,22 +71,9 @@ struct TaskRowView: View {
 
                     Spacer()
                     
-//                    VStack {
-//                        Text("Dosage: \(task.dosage) mg")
-//                            .font(.custom("OpenSans-Regular", size: 14))
-//                            .foregroundStyle(.black.opacity(0.8))
-//
-//                        Text("Pills: \(task.numberOfPills)")
-//                            .font(.custom("OpenSans-Regular", size: 14))
-//                            .foregroundStyle(.black.opacity(0.8))
-//                    }
                     Text("\(task.dosage) mg")
                         .font(.custom("OpenSans-Regular", size: 16))
                         .foregroundStyle(.black.opacity(0.8))
-
-//                    Text("Pills: \(task.numberOfPills)")
-//                        .font(.custom("OpenSans-Regular", size: 14))
-//                        .foregroundStyle(.black.opacity(0.8))
                     
                     Spacer()
 
@@ -116,9 +105,50 @@ struct TaskRowView: View {
     }
 
     private func deleteTask() {
+        // 1. Delete from Firestore
+        if let firebaseId = task.firebaseId,
+           let userId = Auth.auth().currentUser?.uid {
+            let db = Firestore.firestore()
+            db.collection("users")
+                .document(userId)
+                .collection("medications")
+                .document(firebaseId)
+                .delete { error in
+                    if let error = error {
+                        print("Error deleting from Firestore: \(error.localizedDescription)")
+                    } else {
+                        print("Successfully deleted from Firestore")
+                    }
+                }
+        }
+
+        // 2. Delete locally
         context.delete(task)
         try? context.save()
     }
+    
+    private func updateTaskCompletionInFirebase(to newStatus: Bool) {
+        guard let userId = Auth.auth().currentUser?.uid,
+              let firebaseId = task.firebaseId else {
+            print("Missing user ID or Firebase document ID")
+            return
+        }
+
+        let db = Firestore.firestore()
+        db.collection("users")
+            .document(userId)
+            .collection("medications")
+            .document(firebaseId)
+            .updateData(["taskComplete": newStatus]) { error in
+                if let error = error {
+                    print("Error updating taskComplete in Firebase: \(error.localizedDescription)")
+                } else {
+                    print("Successfully updated taskComplete in Firebase.")
+                }
+            }
+    }
+
+
 
     var indicatorColor: Color {
         if task.isCompleted {
