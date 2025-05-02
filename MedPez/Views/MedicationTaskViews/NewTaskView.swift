@@ -94,17 +94,14 @@ struct NewTaskView: View {
                 /// Saving Data with Firebase
                 saveMedicationFirebase()
                 /// Saving Data with SwiftData
-                let task = Task(taskTitle: taskTitle, creationDate: taskDate,
-                    dosage: taskDosage/*,
-                    numberOfPills: Int(taskPills) ?? 0*/
-                    /*, tint: taskColor*/)
-                do {
-                    context.insert(task)
-                    try context.save()
-                    dismiss()
-                } catch {
-                    print(error.localizedDescription)
-                }
+//                let task = Task(taskTitle: taskTitle, creationDate: taskDate, dosage: taskDosage)
+//                do {
+//                    context.insert(task)
+//                    try context.save()
+//                    dismiss()
+//                } catch {
+//                    print(error.localizedDescription)
+//                }
             }, label: {
                 Text("Add Medication")
                     .font(.custom("OpenSans-Bold", size: 22))
@@ -123,29 +120,40 @@ struct NewTaskView: View {
     }
     
     private func saveMedicationFirebase() {
-        let db = Firestore.firestore()
-        
         guard let userId = Auth.auth().currentUser?.uid else {
             print("User not authenticated")
             return
         }
-        
+
+        let db = Firestore.firestore()
         let taskData: [String: Any] = [
             "taskTitle": taskTitle,
             "taskDate": Timestamp(date: taskDate),
             "taskComplete": taskComplete,
-            "dosage": taskDosage,
+            "dosage": taskDosage
         ]
-        
-        db.collection("users")
+
+        var docRef: DocumentReference? = nil
+        docRef = db.collection("users")
             .document(userId)
             .collection("medications")
             .addDocument(data: taskData) { error in
                 if let error = error {
                     print("Error saving to Firestore: \(error.localizedDescription)")
-                } else {
-                    print("Successfully saved to Firestore!")
-                    dismiss()
+                } else if let firebaseId = docRef?.documentID {
+                    let task = Task(
+                        taskTitle: taskTitle,
+                        creationDate: taskDate,
+                        dosage: taskDosage,
+                        firebaseId: firebaseId
+                    )
+                    do {
+                        context.insert(task)
+                        try context.save()
+                        dismiss()
+                    } catch {
+                        print("Error saving to SwiftData: \(error.localizedDescription)")
+                    }
                 }
             }
     }
