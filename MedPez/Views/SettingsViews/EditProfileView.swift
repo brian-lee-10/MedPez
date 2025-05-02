@@ -85,6 +85,10 @@ struct EditProfileView: View {
         .onAppear(perform: loadProfile)
         .sheet(isPresented: $showPasswordReset) {
             ChangePasswordView()
+                .presentationDetents([.height(550)])
+                .interactiveDismissDisabled()
+                .presentationCornerRadius(30)
+                .presentationBackground(.BG)
         }
         .alert("Success", isPresented: $showSuccessAlert) {
             Button("OK", role: .cancel) {}
