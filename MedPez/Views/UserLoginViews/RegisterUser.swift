@@ -7,13 +7,14 @@ struct RegisterView: View {
     @State private var birthdate = Date()
     @State private var email = ""
     @State private var password = ""
+    @State private var alertMessage = ""
     @State private var isPasswordVisible = false
     @State private var showAlert = false
-    @State private var alertMessage = ""
+    @State private var agreedToPolicies = false
+    @State private var showPolicyAlert = false
     @FocusState private var isPasswordFocused: Bool
-    @State private var goToOnboarding = false
     
-    @Environment(\.presentationMode) var presentationMode  // <-- Add this
+    @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
         VStack(spacing: 20) {
@@ -119,8 +120,27 @@ struct RegisterView: View {
             }
             .padding(.horizontal, 30)
             
+            Toggle(isOn: $agreedToPolicies) {
+                HStack(spacing: 0) {
+                    Text("I agree to ")
+                    NavigationLink("Terms of Service", destination: TermsOfServiceView())
+                    Text(" and ")
+                    NavigationLink("Privacy Policy", destination: PrivacyPolicyView())
+                    Text(".")
+                }
+                .font(.custom("OpenSans-Regular", size: 14))
+            }
+            .padding(.horizontal, 15)
+
+            
             // Register Button
-            Button(action: { registerUser() }) {
+            Button(action: {
+                if agreedToPolicies {
+                    registerUser()
+                } else {
+                    showPolicyAlert = true
+                }
+            }) {
                 Text("Create Account")
                     .font(.custom("OpenSans-Bold", size: 20))
                     .frame(maxWidth: .infinity)
@@ -130,7 +150,10 @@ struct RegisterView: View {
                     .cornerRadius(30)
             }
             .padding(.horizontal, 30)
-            .padding(.vertical, 5)
+            .alert("You must agree to the Terms of Service and Privacy Policy to continue.", isPresented: $showPolicyAlert) {
+                Button("OK", role: .cancel) {}
+            }
+
             Spacer()
         }
             
@@ -174,7 +197,9 @@ struct RegisterView: View {
             
             let db = Firestore.firestore()
             db.collection("users").document(user.uid).setData([
-                "email": email
+                "email": email,
+                "agreedToPolicies": true,
+                "consentDate": FieldValue.serverTimestamp()
             ]) { error in
                 if let error = error {
                     alertMessage = "Error saving user data: \(error.localizedDescription)"
