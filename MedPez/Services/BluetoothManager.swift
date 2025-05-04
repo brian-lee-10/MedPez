@@ -15,7 +15,9 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     @Published var peripherals = [Peripheral]()
     @Published var connectedPeripheralUUID: UUID?
     @Published var connectedPeripheral: CBPeripheral?
-    @Published var receivedData: String = "Waiting for data..." // Store incoming data
+    @Published var receivedData: String = "Waiting for data..."
+    @Published var pillCount: Int = 0
+    let pillCountCharacteristicUUID = CBUUID(string: "beb5483e-0001-4688-b7f5-ea07361b26a8")
 
     override init() {
         super.init()
@@ -77,26 +79,47 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
         if let characteristics = service.characteristics {
             for characteristic in characteristics {
-                print("Characteristic found: \(characteristic.uuid)")
-                if characteristic.properties.contains(.notify) {
-                    peripheral.setNotifyValue(true, for: characteristic) // Enable notifications
+                print("🔍 Characteristic found: \(characteristic.uuid)")
+
+                // Enable notifications for pill count characteristic
+                if characteristic.uuid == pillCountCharacteristicUUID {
+                    print("✅ Subscribing to pillCountCharacteristicUUID")
+                    peripheral.setNotifyValue(true, for: characteristic)
                 }
+
+                // Optionally read once (if needed)
                 if characteristic.properties.contains(.read) {
-                    peripheral.readValue(for: characteristic) // Read value once
+                    peripheral.readValue(for: characteristic)
+                }
+            }
+        } else if let error = error {
+            print("❌ Error discovering characteristics: \(error.localizedDescription)")
+        }
+    }
+    
+    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
+        if let data = characteristic.value {
+            let receivedString = String(decoding: data, as: UTF8.self)
+
+            print("🔵 Characteristic updated: \(characteristic.uuid)")
+            print("📦 Raw received string: \(receivedString)")
+
+            if characteristic.uuid == pillCountCharacteristicUUID {
+                print("✅ Matched pillCountCharacteristicUUID")
+
+                if let pillValue = Int(receivedString) {
+                    print("💊 Parsed pill count: \(pillValue)")
+                    DispatchQueue.main.async {
+                        self.pillCount = pillValue
+                    }
+                } else {
+                    print("❌ Could not convert to Int")
                 }
             }
         }
     }
 
-    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-        if let data = characteristic.value {
-            let receivedString = String(decoding: data, as: UTF8.self)
-            DispatchQueue.main.async {
-                self.receivedData = receivedString // Store received counter data
-            }
-            print("Received Data: \(receivedString)") // Debug log
-        }
-    }
+
 
     
     func startScanning() {
