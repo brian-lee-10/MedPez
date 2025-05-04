@@ -9,7 +9,7 @@ import SwiftUI
 import CoreBluetooth
 
 struct BluetoothView: View {
-    @StateObject var bluetoothManager = BluetoothManager()
+    @EnvironmentObject var bluetoothManager: BluetoothManager
     @State private var alarmOn = false
     @State private var showDisconnectAlert = false
     @State private var showPairingView = false
@@ -88,31 +88,25 @@ struct BluetoothView: View {
                     .background(Color(.systemGray6))
                     .cornerRadius(12)
                     
-                    // Alarm Toggle
+                    // Pills Left
                     VStack {
-                        Text("Alarm")
+                        Text("In MedPez")
                             .font(.custom("OpenSans-Regular", size: 14))
-                        Toggle("", isOn: $alarmOn)
-                            .labelsHidden()
+                        Text("\(bluetoothManager.pillCount)")
+                            .font(.custom("OpenSans-Bold", size: 20))
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
                     .background(Color(.systemGray6))
                     .cornerRadius(12)
+
                     
-                    // Override
+                    // Notification Toggle
                     VStack {
-                        Text("Override")
+                        Text("Notifications")
                             .font(.custom("OpenSans-Regular", size: 14))
-                        Button(action: {
-                            // Handle override
-                        }) {
-                            Image(systemName: "lock.fill")
-                                .foregroundColor(.white)
-                                .padding()
-                                .background(Color.red)
-                                .clipShape(Circle())
-                        }
+                        Toggle("", isOn: $alarmOn)
+                            .labelsHidden()
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -169,6 +163,9 @@ struct BluetoothView: View {
                     .padding()
                     .sheet(isPresented: $showPairingView) {
                         PairingView(bluetoothManager: bluetoothManager)
+                            .presentationDetents([.height(600)])
+                            .interactiveDismissDisabled()
+                            .presentationCornerRadius(30)
                     }
                 }
             }
@@ -182,6 +179,11 @@ struct BluetoothView: View {
 }
 
 
+//#Preview {
+//    BluetoothView()
+//}
+
 #Preview {
     BluetoothView()
+        .environmentObject(BluetoothManager())
 }
