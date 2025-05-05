@@ -16,35 +16,69 @@ struct NextDoseDetailView: View {
 
     var body: some View {
         VStack(spacing: 20) {
+            HStack {
+                Button(action: { dismiss() }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.title)
+                        .tint(.red)
+                }
+                Spacer()
+            }
+            
             Text("Next Dose Details")
                 .font(.custom("OpenSans-Bold", size: 28))
 
             if hasNextDose {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Medication: \(title)")
-                    Text("Dosage: \(dosage) mg")
-                    Text("Scheduled At: \(formattedDate(date))")
+                VStack(alignment: .leading, spacing: 16) {
+                    HStack {
+                        Text("Next Dose")
+                            .font(.custom("OpenSans-Bold", size: 22))
+                            .foregroundColor(Color("SlateBlue"))
+                        Spacer()
+                    }
 
-                    Toggle("Mark as Taken", isOn: $isCompleted)
+                    VStack(alignment: .leading, spacing: 12) {
+                        HStack {
+                            Image(systemName: "pills.fill")
+                                .foregroundColor(.blue)
+                            Text("Medication: \(title)")
+                        }
+
+                        HStack {
+                            Image(systemName: "drop.fill")
+                                .foregroundColor(.purple)
+                            Text("Dosage: \(dosage) mg")
+                        }
+
+                        HStack {
+                            Image(systemName: "clock.fill")
+                                .foregroundColor(.orange)
+                            Text("Scheduled At: \(formattedDate(date))")
+                        }
+
+                        Toggle(isOn: $isCompleted) {
+                            Text("Mark as Taken")
+                                .font(.custom("OpenSans-Regular", size: 18))
+                        }
+                        .toggleStyle(SwitchToggleStyle(tint: Color("SlateBlue")))
                         .onChange(of: isCompleted) { _, newValue in
                             updateCompletionStatus(to: newValue)
                         }
+                    }
+                    .padding()
+                    .background(Color.white)
+                    .cornerRadius(16)
+                    .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 4)
                 }
-                .font(.custom("OpenSans-Regular", size: 18))
                 .padding()
             } else {
-                Text("There is nothing.")
+                Text("No Next Dose")
                     .font(.custom("OpenSans-Regular", size: 20))
                     .foregroundColor(.gray)
                     .padding()
             }
 
             Spacer()
-
-            Button("Close") {
-                dismiss()
-            }
-            .font(.custom("OpenSans-Bold", size: 18))
         }
         .padding()
     }
