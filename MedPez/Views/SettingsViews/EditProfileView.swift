@@ -12,84 +12,65 @@ struct EditProfileView: View {
     @State private var name: String = ""
     @State private var email: String = ""
     @State private var birthdate: Date? = nil
-    @State private var showPasswordReset = false
     @State private var showSuccessAlert = false
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 25) {
-                Text("Edit Profile")
-                    .font(.custom("OpenSans-Bold", size: 28))
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal)
+        VStack(spacing: 20) {
+            Text("Edit Profile")
+                .font(.custom("OpenSans-Bold", size: 28))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal)
 
-                Group {
-                    ProfileField(title: "Full Name") {
-                        TextField("Enter your name", text: $name)
-                            .padding()
-                            .background(Color.white)
-                            .cornerRadius(8)
-                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray.opacity(0.5)))
-                    }
-
-                    ProfileField(title: "Email") {
-                        Text(email)
-                            .padding()
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .background(Color.gray.opacity(0.2))
-                            .cornerRadius(8)
-                    }
-
-                    ProfileField(title: "Birthdate (optional)") {
-                        DatePicker("Select a birthdate", selection: Binding(get: {
-                            birthdate ?? Date()
-                        }, set: { newDate in
-                            birthdate = newDate
-                        }), displayedComponents: .date)
-                        .datePickerStyle(.compact)
+            // Profile Form
+            VStack(spacing: 20) {
+                ProfileField(title: "Full Name") {
+                    TextField("Enter your name", text: $name)
                         .padding()
                         .background(Color.white)
-                        .cornerRadius(8)
-                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray.opacity(0.5)))
-                    }
+                        .cornerRadius(10)
+                        .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray.opacity(0.3)))
                 }
-                .padding(.horizontal)
 
-                VStack(spacing: 15) {
-                    Button(action: updateProfile) {
-                        Text("Save Changes")
-                            .font(.custom("OpenSans-Bold", size: 20))
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 15)
-                            .background(Color("SlateBlue"))
-                            .foregroundColor(.white)
-                            .cornerRadius(30)
-                    }
-
-                    Button(action: {
-                        showPasswordReset = true
-                    }) {
-                        Text("Change Password")
-                            .font(.custom("OpenSans-Bold", size: 20))
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 15)
-                            .background(Color("SlateBlue"))
-                            .foregroundColor(.white)
-                            .cornerRadius(30)
-                    }
+                ProfileField(title: "Email") {
+                    Text(email)
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Color.gray.opacity(0.2))
+                        .cornerRadius(10)
                 }
-                .padding(.horizontal)
+
+                ProfileField(title: "Birthdate (optional)") {
+                    DatePicker("Select a birthdate", selection: Binding(
+                        get: { birthdate ?? Date() },
+                        set: { birthdate = $0 }
+                    ), displayedComponents: .date)
+                    .datePickerStyle(.compact)
+                    .padding()
+                    .background(Color.white)
+                    .cornerRadius(10)
+                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray.opacity(0.3)))
+                }
             }
-            .padding(.vertical)
+            .padding()
+            .background(Color("Smoke"))
+            .cornerRadius(20)
+            .padding(.horizontal)
+
+            Button(action: updateProfile) {
+                Text("Save Changes")
+                    .font(.custom("OpenSans-Bold", size: 20))
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color("SlateBlue"))
+                    .foregroundColor(.white)
+                    .cornerRadius(30)
+            }
+            .padding(.horizontal)
+
+            Spacer()
         }
+        .padding(.top)
         .onAppear(perform: loadProfile)
-        .sheet(isPresented: $showPasswordReset) {
-            ChangePasswordView()
-                .presentationDetents([.height(550)])
-                .interactiveDismissDisabled()
-                .presentationCornerRadius(30)
-                .presentationBackground(.BG)
-        }
         .alert("Success", isPresented: $showSuccessAlert) {
             Button("OK", role: .cancel) {}
         } message: {
