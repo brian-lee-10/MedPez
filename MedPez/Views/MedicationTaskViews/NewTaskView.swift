@@ -18,10 +18,9 @@ struct NewTaskView: View {
     
     @State private var taskTitle: String = ""
     @State private var taskDate: Date = .init()
-    // @State private var taskColor: String = "TaskColor 1"
     @State private var taskDosage: String = ""
-    // @State private var taskPills: String = ""
     @State private var taskComplete: Bool = false
+    @AppStorage("notificationsEnabled") private var notificationsEnabled: Bool = true
     
     var body: some View {
         VStack(alignment: .leading, spacing: 15, content: {
@@ -139,7 +138,10 @@ struct NewTaskView: View {
                         context.insert(task)
                         try context.save()
                         
-                        NotificationManager.scheduleNotification(for: task)
+                        if notificationsEnabled {
+                            NotificationManager.scheduleNotification(for: task)
+                        }
+
                         dismiss()
                     } catch {
                         print("Error saving to SwiftData: \(error.localizedDescription)")
