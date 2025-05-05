@@ -19,7 +19,7 @@ struct OnboardingView: View {
                         .tag(0)
                     OnboardingPage(imageName: "calendar", title: "Smart Reminders", description: "Get alerts for your next dose automatically.")
                         .tag(1)
-                    OnboardingPage(imageName: "device_image", title: "MedPez Integration", description: "Connect with your MedPez pill dispenser.")
+                    OnboardingPage(imageName: "iphone", title: "MedPez Integration", description: "Connect with your MedPez pill dispenser.")
                         .tag(2)
                 }
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .always))
@@ -82,5 +82,5 @@ struct OnboardingPage: View {
     }
 }
 #Preview {
-    OnboardingPage(imageName: "person.circle.fill", title: "Welcome", description: "Lorem ipsum dolor sit amet")
+    OnboardingPage(imageName: "iphone", title: "MedPez Integration", description: "Connect with your MedPez pill dispenser.")
 }
