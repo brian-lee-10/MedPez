@@ -118,8 +118,49 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
             }
         }
     }
+    
+    func sendNextDoseTime(_ timeString: String) {
+        guard let peripheral = connectedPeripheral else { return }
 
+        let nextDoseUUID = CBUUID(string: "beb5483e-0003-4688-b7f5-ea07361b26a8")
 
+        // Discover the characteristic and write the value
+        if let services = peripheral.services {
+            for service in services {
+                if let characteristics = service.characteristics {
+                    for characteristic in characteristics {
+                        if characteristic.uuid == nextDoseUUID {
+                            if let data = timeString.data(using: .utf8) {
+                                peripheral.writeValue(data, for: characteristic, type: .withResponse)
+                                print("🕐 Sent next dose time: \(timeString)")
+                            }
+                            return
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func sendTodayDoseData(total: Int, completed: Int) {
+        guard let peripheral = connectedPeripheral else { return }
+
+        // UUIDs must match those in the ESP32 sketch
+        let totalUUID = CBUUID(string: "beb5483e-0004-4688-b7f5-ea07361b26a8")
+        let completedUUID = CBUUID(string: "beb5483e-0005-4688-b7f5-ea07361b26a8")
+
+        if let service = peripheral.services?.first {
+            for char in service.characteristics ?? [] {
+                if char.uuid == totalUUID {
+                    let value = "\(total)".data(using: .utf8)!
+                    peripheral.writeValue(value, for: char, type: .withResponse)
+                } else if char.uuid == completedUUID {
+                    let value = "\(completed)".data(using: .utf8)!
+                    peripheral.writeValue(value, for: char, type: .withResponse)
+                }
+            }
+        }
+    }
 
     
     func startScanning() {
@@ -130,3 +171,4 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
         myCentral.stopScan()
     }
 }
+
