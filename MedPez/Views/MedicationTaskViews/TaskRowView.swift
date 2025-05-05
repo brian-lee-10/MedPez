@@ -13,6 +13,8 @@ struct TaskRowView: View {
     @Bindable var task: Task
     @Environment(\.modelContext) private var context
     @State private var showDeleteConfirmation = false
+    @State private var showEditSheet = false
+
 
     var body: some View {
         HStack(alignment: .top, spacing: 15) {
@@ -102,6 +104,15 @@ struct TaskRowView: View {
             .offset(y: -8)
         }
         .hSpacing(.leading)
+        .onTapGesture {
+                showEditSheet = true
+            }
+            .sheet(isPresented: $showEditSheet) {
+                EditTaskView(task: task)
+                    .presentationDetents([.height(500)])
+                    .interactiveDismissDisabled()
+                    .presentationCornerRadius(30)
+            }
     }
 
     private func deleteTask() {
@@ -124,6 +135,7 @@ struct TaskRowView: View {
 
         // 2. Delete locally
         context.delete(task)
+        NotificationManager.cancelNotification(for: task)
         try? context.save()
     }
     
