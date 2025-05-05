@@ -21,16 +21,22 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
 
     override init() {
         super.init()
-        myCentral = CBCentralManager(delegate: self, queue: nil)
+        // myCentral = CBCentralManager(delegate: self, queue: nil)
+    }
+    
+    func initializeCentralManager() {
+        if myCentral == nil {
+            myCentral = CBCentralManager(delegate: self, queue: nil)
+        }
     }
 
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         isSwitchedOn = central.state == .poweredOn
-        if isSwitchedOn {
-            startScanning()
-        } else {
-            stopScanning()
-        }
+//        if isSwitchedOn {
+//            startScanning()
+//        } else {
+//            stopScanning()
+//        }
     }
 
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi RSSI: NSNumber) {
