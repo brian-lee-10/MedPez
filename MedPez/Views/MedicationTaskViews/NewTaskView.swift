@@ -93,15 +93,6 @@ struct NewTaskView: View {
             Button(action: {
                 /// Saving Data with Firebase
                 saveMedicationFirebase()
-                /// Saving Data with SwiftData
-//                let task = Task(taskTitle: taskTitle, creationDate: taskDate, dosage: taskDosage)
-//                do {
-//                    context.insert(task)
-//                    try context.save()
-//                    dismiss()
-//                } catch {
-//                    print(error.localizedDescription)
-//                }
             }, label: {
                 Text("Add Medication")
                     .font(.custom("OpenSans-Bold", size: 22))
@@ -112,9 +103,6 @@ struct NewTaskView: View {
 
             })
             .disabled(taskTitle == "")
-            // .opacity(taskTitle == "" ? 0.5 : 1)
-            
-            
         })
         .padding(15)
     }
@@ -150,6 +138,8 @@ struct NewTaskView: View {
                     do {
                         context.insert(task)
                         try context.save()
+                        
+                        NotificationManager.scheduleNotification(for: task)
                         dismiss()
                     } catch {
                         print("Error saving to SwiftData: \(error.localizedDescription)")
