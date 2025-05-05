@@ -56,27 +56,14 @@ struct ContentView: View {
                 // Full-width Next Dose
                 NextDoseCard()
                     .frame(maxWidth: .infinity, minHeight: 100)
+                    .environmentObject(bluetoothManager)
 
                 HStack {
                     MyCalendarCard(showCalendar: $showCalendar)
-                    
-//                    VStack (spacing: 16) {
-//                        MyCalendarCard(showCalendar: $showCalendar)
-//                        // PillsLeftInMedPezCard(pillsLeft: Int(bluetoothManager.receivedData) ?? 0)
-//                        PillsLeftInMedPezCard(pillsLeft: 4)
-//
-//                    }
                     MyDeviceCard(showBluetooth: $showBluetooth)
                 }
 
                 AddMedicationCard(showNewTask: $showNewTask)
-                
-//                HStack {
-//                    PillsRemainingTodayCard(pillsRemaining: remainingPillsToday)
-//                        .frame(maxWidth: .infinity, minHeight: 100)
-//                    
-//                    AddMedicationCard(showNewTask: $showNewTask)
-//                }
             }
             .padding()
             .navigationDestination(isPresented: $showCalendar) {
@@ -104,6 +91,7 @@ struct ContentView: View {
         }
         .onAppear {
             loadProfile()
+            NotificationManager.requestAuthorization()
         }
         .navigationBarHidden(true)
     }
@@ -159,6 +147,7 @@ struct NextDoseCard: View {
     @State private var pillsRemainingToday: Int = 0
     @State private var showNextDoseDetail = false
     @State private var nextDoseId: String = ""
+    @EnvironmentObject var bluetoothManager: BluetoothManager
 
 
     var body: some View {
@@ -171,7 +160,7 @@ struct NextDoseCard: View {
                                 .font(.custom("OpenSans-Bold", size: 26))
                                 .foregroundColor(.white)
                             
-                            Text("\(pillsRemainingToday) Pills Left Today")
+                            Text("\(pillsRemainingToday) Pill(s) Left Today")
                                 .font(.custom("OpenSans-Regular", size: 18))
                                 .foregroundColor(.white)
                         }
@@ -235,7 +224,7 @@ struct NextDoseCard: View {
                     documentId: nextDoseId,
                     hasNextDose: !noUpcomingDose
                 )
-                .presentationDetents([.height(350)])
+                .presentationDetents([.height(400)])
                 .interactiveDismissDisabled()
                 .presentationCornerRadius(30)
                 .presentationCornerRadius(25)
@@ -291,11 +280,16 @@ struct NextDoseCard: View {
                         self.nextDoseDosage = nextTask.data()["dosage"] as? String ?? ""
                         self.nextDoseId = nextTask.documentID
                         self.noUpcomingDose = false
+
+                        let formattedTime = self.formatNextDoseTime()
+                        bluetoothManager.sendNextDoseTime(formattedTime)
                     }
                 } else {
                     DispatchQueue.main.async {
                         self.noUpcomingDose = true
                         self.nextDoseTime = nil
+                        
+                        bluetoothManager.sendNextDoseTime("--:--")
                     }
                 }
             }
@@ -327,7 +321,15 @@ struct NextDoseCard: View {
 
                 DispatchQueue.main.async {
                     self.pillsRemainingToday = uncompletedTasks.count
+                    
+                    let totalToday = documents.count
+                    let completedToday = totalToday - self.pillsRemainingToday
+
+                    if bluetoothManager.connectedPeripheral != nil {
+                        bluetoothManager.sendTodayDoseData(total: totalToday, completed: completedToday)
+                    }
                 }
+
             }
     }
 }
@@ -343,15 +345,19 @@ struct MyCalendarCard: View {
                     .foregroundColor(.white)
                 Spacer()
                 
+                HStack {
+                        Image(systemName: "calendar")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 30, height: 30)
+                            .foregroundColor(.white)
+                            .padding()
+                        Spacer()
+                    }
+                
                 Text(currentDateFormatted)
                     .font(.custom("OpenSans-Bold", size: 40))
                     .foregroundColor(.white)
-                
-//                Image(systemName: "calendar")
-//                    .resizable()
-//                    .scaledToFit()
-//                    .frame(width: 30, height: 30)
-//                    .foregroundColor(.white)
             }
             .padding()
             .frame(maxWidth: .infinity)
@@ -470,4 +476,5 @@ struct PillsLeftInMedPezCard: View {
 
 #Preview {
     ContentView()
+        .environmentObject(BluetoothManager())
 }
