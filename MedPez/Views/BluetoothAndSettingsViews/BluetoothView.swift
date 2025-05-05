@@ -178,11 +178,6 @@ struct BluetoothView: View {
     }
 }
 
-
-//#Preview {
-//    BluetoothView()
-//}
-
 #Preview {
     BluetoothView()
         .environmentObject(BluetoothManager())
