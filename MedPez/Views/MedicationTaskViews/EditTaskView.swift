@@ -12,6 +12,7 @@ import FirebaseAuth
 struct EditTaskView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
+    @AppStorage("notificationsEnabled") private var notificationsEnabled: Bool = true
     @Bindable var task: Task
 
     var body: some View {
@@ -103,9 +104,14 @@ struct EditTaskView: View {
                         try context.save()
                         NotificationManager.cancelNotification(for: task)
 
-                        if !task.isCompleted {
+//                        if !task.isCompleted {
+//                            NotificationManager.scheduleNotification(for: task)
+//                        }
+                        
+                        if notificationsEnabled && !task.isCompleted {
                             NotificationManager.scheduleNotification(for: task)
                         }
+
                         dismiss()
                     } catch {
                         print("Error saving context: \(error.localizedDescription)")
