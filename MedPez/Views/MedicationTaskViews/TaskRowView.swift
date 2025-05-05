@@ -112,6 +112,7 @@ struct TaskRowView: View {
                     .presentationDetents([.height(500)])
                     .interactiveDismissDisabled()
                     .presentationCornerRadius(30)
+                    .presentationBackground(.BG)
             }
     }
 
