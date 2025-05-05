@@ -13,6 +13,7 @@ struct SettingsView: View {
     @State private var isLoggedOut = false
     @State private var showDeleteAlert = false
     @State private var isDeletingAccount = false
+    @State private var showChangePassword = false
 
     var body: some View {
         VStack {
@@ -21,15 +22,21 @@ struct SettingsView: View {
                 .padding(.top, 20)
 
             List {
+                Section(header: Text("Account Security")){
+                    Button {
+                            showChangePassword = true
+                    } label: {
+                        Label("Change Password", systemImage: "key.fill")
+                            .font(.custom("OpenSans-Regular", size: 18))
+                            .foregroundStyle(.black)
+                    }
+                }
+                
                 Section(header: Text("Support & Device")){
                     NavigationLink(destination: BluetoothView()) {
                         Label("My Device", systemImage: "dot.radiowaves.left.and.right")
                             .font(.custom("OpenSans-Regular", size:18))
                     }
-                    
-//                    NavigationLink(destination: NotificationSettingsView()) {
-//                        Label("Reminder Settings", systemImage: "bell.badge")
-//                    }
                     
                     NavigationLink(destination: HelpSupportView()) {
                         Label("Support Center", systemImage: "questionmark.circle")
@@ -37,7 +44,7 @@ struct SettingsView: View {
                     }
                 }
                 
-                Section(header: Text("Legal")) {
+                Section(header: Text("Legal & App Info")) {
                     NavigationLink(destination: TermsOfServiceView()) {
                         Label("Terms of Service", systemImage: "doc.text")
                             .font(.custom("OpenSans-Regular", size: 18))
@@ -52,9 +59,7 @@ struct SettingsView: View {
                             Label("Medical Disclaimer", systemImage: "exclamationmark.shield")
                                 .font(.custom("OpenSans-Regular", size: 18))
                         }
-                }
-                
-                Section(header: Text("App Info")) {
+                    
                     NavigationLink(destination: AboutMedPezView()) {
                         Label("About MedPez", systemImage: "info.circle")
                             .font(.custom("OpenSans-Regular", size: 18))
@@ -103,6 +108,13 @@ struct SettingsView: View {
                 }
             }
             .listStyle(InsetGroupedListStyle())
+        }
+        .sheet(isPresented: $showChangePassword) {
+            ChangePasswordView()
+                .presentationDetents([.height(550)])
+                .interactiveDismissDisabled()
+                .presentationCornerRadius(30)
+                .presentationBackground(.BG)
         }
         .alert("Log Out", isPresented: $showLogoutAlert) {
             Button("Cancel", role: .cancel) {}
