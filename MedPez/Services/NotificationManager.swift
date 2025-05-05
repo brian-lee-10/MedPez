@@ -46,4 +46,18 @@ struct NotificationManager {
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [task.id.uuidString])
         print("🗑️ Notification canceled for task: \(task.taskTitle)")
     }
+    
+    static func cancelAllScheduledNotifications() {
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        print("🛑 All notifications cancelled.")
+    }
+
+    static func reschedulePendingTasks() {
+        TaskManager.fetchPendingTasks { tasks in
+            for task in tasks {
+                scheduleNotification(for: task)
+            }
+        }
+    }
 }
+
