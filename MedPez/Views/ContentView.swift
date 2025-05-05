@@ -11,6 +11,8 @@ struct ContentView: View {
     @EnvironmentObject var bluetoothManager: BluetoothManager
 
     @AppStorage("hasSeenDisclaimer") private var hasSeenDisclaimer: Bool = false
+    @AppStorage("notificationsEnabled") private var notificationsEnabled: Bool = true
+
     
     let gridItems = [GridItem(.flexible()), GridItem(.flexible())]
     
@@ -92,6 +94,13 @@ struct ContentView: View {
         .onAppear {
             loadProfile()
             NotificationManager.requestAuthorization()
+        }
+        .onChange(of: notificationsEnabled) {
+            if notificationsEnabled {
+                NotificationManager.reschedulePendingTasks()
+            } else {
+                NotificationManager.cancelAllScheduledNotifications()
+            }
         }
         .navigationBarHidden(true)
     }
