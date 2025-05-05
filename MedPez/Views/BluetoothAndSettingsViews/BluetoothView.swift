@@ -10,9 +10,12 @@ import CoreBluetooth
 
 struct BluetoothView: View {
     @EnvironmentObject var bluetoothManager: BluetoothManager
-    @State private var alarmOn = false
     @State private var showDisconnectAlert = false
     @State private var showPairingView = false
+    @State private var areNotificationsAuthorized: Bool = true
+    @AppStorage("notificationsEnabled") private var notificationsEnabled: Bool = true
+    @State private var showTurnOffAlert = false
+    @State private var showSuccessMessage = false
     
     var body: some View {
         ZStack {
@@ -30,7 +33,6 @@ struct BluetoothView: View {
                 
                 // Device Heading
                 VStack {
-                    
                     HStack {
                         Text("MedPez 1.0")
                             .font(.custom("OpenSans-Bold", size: 24))
@@ -71,47 +73,74 @@ struct BluetoothView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(height: 320)
-                    .padding()
+                    .padding(.horizontal)
+                    .padding(.vertical, 24)
                 
                 /// Info Grid
                 HStack(spacing: 12) {
                     // Battery
-                    VStack {
-                        Text("Battery")
-                            .font(.custom("OpenSans-Regular", size: 14))
-                        Image(systemName: "battery.100")
-                        Text("100%")
-                            .font(.custom("OpenSans-Bold", size: 20))
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color(.systemGray6))
-                    .cornerRadius(12)
+//                    VStack (spacing: 10) {
+//                        Text("Battery")
+//                            .font(.custom("OpenSans-Regular", size: 14))
+//                        Image(systemName: "battery.100")
+//                        Text("100%")
+//                            .font(.custom("OpenSans-Bold", size: 20))
+//                    }
+//                    .frame(maxWidth: .infinity)
+//                    .padding()
+//                    .background(Color(.BG))
+//                    .cornerRadius(12)
                     
                     // Pills Left
-                    VStack {
+                    VStack(spacing: 10) {
                         Text("In MedPez")
                             .font(.custom("OpenSans-Regular", size: 14))
                         Text("\(bluetoothManager.pillCount)")
-                            .font(.custom("OpenSans-Bold", size: 20))
+                            .font(.custom("OpenSans-Bold", size: 26))
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color(.systemGray6))
+                    .background(Color(.BG))
                     .cornerRadius(12)
 
                     
                     // Notification Toggle
-                    VStack {
+                    VStack(spacing: 10) {
                         Text("Notifications")
                             .font(.custom("OpenSans-Regular", size: 14))
-                        Toggle("", isOn: $alarmOn)
-                            .labelsHidden()
+
+                        Toggle("", isOn: Binding(
+                            get: { notificationsEnabled },
+                            set: { newValue in
+                                if newValue {
+                                    notificationsEnabled = true
+                                    showSuccessMessage = true
+                                } else {
+                                    showTurnOffAlert = true
+                                }
+                            }
+                        ))
+                        .labelsHidden()
+                        .disabled(!areNotificationsAuthorized)
+                        .alert("Turn Off Notifications?", isPresented: $showTurnOffAlert) {
+                            Button("Cancel", role: .cancel) {}
+                            Button("Turn Off", role: .destructive) {
+                                notificationsEnabled = false
+                            }
+                        } message: {
+                            Text("You may miss medication reminders if notifications are off.")
+                        }
+                        .alert("Notifications Enabled", isPresented: $showSuccessMessage) {
+                            Button("OK", role: .cancel) {}
+                        } message: {
+                            Text("You’ll receive reminders at your scheduled medication times.")
+                        }
                     }
-                    .frame(maxWidth: .infinity)
+                    .frame(maxWidth: .infinity, alignment: .center)
                     .padding()
-                    .background(Color(.systemGray6))
+                    .background(Color(.BG))
                     .cornerRadius(12)
+
                 }
                 .padding(.horizontal)
                 
@@ -171,9 +200,21 @@ struct BluetoothView: View {
             }
         }
         .onAppear {
+            bluetoothManager.initializeCentralManager()
+            
             if bluetoothManager.isSwitchedOn {
                 bluetoothManager.startScanning()
             }
+            // Check if Notifications are allowed
+            UNUserNotificationCenter.current().getNotificationSettings { settings in
+                DispatchQueue.main.async {
+                    areNotificationsAuthorized = (settings.authorizationStatus == .authorized)
+                    if !areNotificationsAuthorized {
+                        notificationsEnabled = false
+                    }
+                }
+            }
+
         }
     }
 }
