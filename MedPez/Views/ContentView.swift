@@ -102,6 +102,9 @@ struct ContentView: View {
                 NotificationManager.cancelAllScheduledNotifications()
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: .medicationReminderFired)) { _ in
+            bluetoothManager.sendAlarmTrigger()
+        }
         .navigationBarHidden(true)
     }
 
@@ -156,6 +159,7 @@ struct NextDoseCard: View {
     @State private var pillsRemainingToday: Int = 0
     @State private var showNextDoseDetail = false
     @State private var nextDoseId: String = ""
+    @State private var lastSentDoseTime: String = ""
     @EnvironmentObject var bluetoothManager: BluetoothManager
 
 
@@ -291,7 +295,11 @@ struct NextDoseCard: View {
                         self.noUpcomingDose = false
 
                         let formattedTime = self.formatNextDoseTime()
-                        bluetoothManager.sendNextDoseTime(formattedTime)
+                        if formattedTime != self.lastSentDoseTime {
+                            bluetoothManager.sendNextDoseTime(formattedTime)
+                            self.lastSentDoseTime = formattedTime
+                        }
+
                     }
                 } else {
                     DispatchQueue.main.async {
@@ -435,53 +443,6 @@ struct AddMedicationCard: View {
         }
     }
 }
-
-struct PillsRemainingTodayCard: View {
-    var pillsRemaining: Int
-
-    var body: some View {
-        VStack {
-            Text("Today's Progress")
-                .font(.custom("OpenSans-Regular", size: 18))
-                .foregroundColor(.black)
-            Text("\(pillsRemaining)")
-                .font(.custom("OpenSans-Bold", size: 32))
-                .bold()
-                .foregroundColor(.black)
-                .padding(.horizontal)
-        }
-        .padding()
-        .frame(maxWidth: .infinity, minHeight: 100)
-        .background(Color("Smoke"))
-        .cornerRadius(16)
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.black, lineWidth: 1)
-        )
-    }
-}
-
-/// Pills sent from Device -> moved to Bluetooth View
-struct PillsLeftInMedPezCard: View {
-    var pillsLeft: Int
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 3) {
-            Text("In MedPez")
-                .font(.custom("OpenSans-Regular", size: 18))
-                .foregroundColor(.white)
-            Text("\(pillsLeft) pills")
-                .font(.custom("OpenSans-Bold", size: 28))
-                .bold()
-                .foregroundColor(.white)
-        }
-        .padding()
-        .frame(maxWidth: .infinity, minHeight: 120)
-        .background(Color("Jade"))
-        .cornerRadius(16)
-    }
-}
-
 
 #Preview {
     ContentView()
