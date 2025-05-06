@@ -7,10 +7,14 @@
 
 import Foundation
 import SwiftUI
+import SwiftData
 import CoreBluetooth
+import FirebaseAuth
+import FirebaseFirestore
 
 class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     var myCentral: CBCentralManager!
+    var modelContext: ModelContext?
     @Published var isSwitchedOn = false
     @Published var peripherals = [Peripheral]()
     @Published var connectedPeripheralUUID: UUID?
@@ -20,6 +24,7 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     let pillCountCharacteristicUUID = CBUUID(string: "beb5483e-0001-4688-b7f5-ea07361b26a8")
     @Published var batteryLevel: Int = 0
     let batteryLevelCharacteristicUUID = CBUUID(string: "beb5483e-0002-4688-b7f5-ea07361b26a8")
+    private var lastKnownPillCount: Int = 0
 
     override init() {
         super.init()
@@ -119,13 +124,26 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
                 print("✅ Matched pillCountCharacteristicUUID")
 
                 if let pillValue = Int(receivedString) {
-                    print("💊 Parsed pill count: \(pillValue)")
                     DispatchQueue.main.async {
+                        if pillValue < self.pillCount {  // Pill was taken
+                            self.markEarliestIncompleteTaskComplete()
+                        }
                         self.pillCount = pillValue
+                        self.lastKnownPillCount = pillValue
                     }
-                } else {
+                }else {
                     print("❌ Could not convert to Int")
                 }
+
+                
+//                if let pillValue = Int(receivedString) {
+//                    print("💊 Parsed pill count: \(pillValue)")
+//                    DispatchQueue.main.async {
+//                        self.pillCount = pillValue
+//                    }
+//                } else {
+//                    print("❌ Could not convert to Int")
+//                }
             }
             
             if characteristic.uuid == batteryLevelCharacteristicUUID {
@@ -206,6 +224,59 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
             }
         }
     }
+    
+    private func markEarliestIncompleteTaskComplete() {
+        guard let user = Auth.auth().currentUser else { return }
+
+        let db = Firestore.firestore()
+        let today = Calendar.current.startOfDay(for: Date())
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today)!
+
+        db.collection("users")
+            .document(user.uid)
+            .collection("medications")
+            .whereField("taskDate", isGreaterThanOrEqualTo: Timestamp(date: today))
+            .whereField("taskDate", isLessThan: Timestamp(date: tomorrow))
+            .order(by: "taskDate")
+            .getDocuments { snapshot, error in
+                if let error = error {
+                    print("❌ Error fetching tasks: \(error.localizedDescription)")
+                    return
+                }
+
+                guard let documents = snapshot?.documents else { return }
+
+                if let firstIncomplete = documents.first(where: { !($0["taskComplete"] as? Bool ?? false) }) {
+                    let docRef = firstIncomplete.reference
+                    let docId = docRef.documentID
+
+                    docRef.updateData(["taskComplete": true]) { err in
+                        if let err = err {
+                            print("❌ Error updating task in Firebase: \(err.localizedDescription)")
+                        } else {
+                            print("✅ Marked earliest incomplete task as complete in Firebase.")
+
+                            // 🔁 Sync with local SwiftData
+                            DispatchQueue.main.async {
+                                if let context = self.modelContext {
+                                    let fetchDescriptor = FetchDescriptor<Task>(
+                                        predicate: #Predicate { $0.firebaseId == docId }
+                                    )
+                                    if let matchedTask = try? context.fetch(fetchDescriptor).first {
+                                        matchedTask.isCompleted = true
+                                        try? context.save()
+                                        print("✅ Local SwiftData task marked complete")
+                                    } else {
+                                        print("⚠️ Could not find matching local task")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+    }
+
 
     
     func startScanning() {
