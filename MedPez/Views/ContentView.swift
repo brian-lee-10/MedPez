@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 import FirebaseAuth
 import FirebaseFirestore
 
@@ -9,6 +10,7 @@ struct ContentView: View {
     @State private var showProfile = false
     @State private var showBluetooth = false
     @EnvironmentObject var bluetoothManager: BluetoothManager
+    @Environment(\.modelContext) private var context
 
     @AppStorage("hasSeenDisclaimer") private var hasSeenDisclaimer: Bool = false
     @AppStorage("notificationsEnabled") private var notificationsEnabled: Bool = true
@@ -94,6 +96,7 @@ struct ContentView: View {
         .onAppear {
             loadProfile()
             NotificationManager.requestAuthorization()
+            bluetoothManager.modelContext = context  // ✅ Inject SwiftData context
         }
         .onChange(of: notificationsEnabled) {
             if notificationsEnabled {
