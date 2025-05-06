@@ -21,6 +21,8 @@ struct NewTaskView: View {
     @State private var taskDosage: String = ""
     @State private var taskComplete: Bool = false
     @AppStorage("notificationsEnabled") private var notificationsEnabled: Bool = true
+    @AppStorage("medicationDataConsentGiven") private var consentGiven: Bool = false
+    @State private var showConsentDialog = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 15, content: {
@@ -90,8 +92,11 @@ struct NewTaskView: View {
             Spacer(minLength: 0)
             
             Button(action: {
-                /// Saving Data with Firebase
-                saveMedicationFirebase()
+                if consentGiven {
+                    saveMedicationFirebase()
+                } else {
+                    showConsentDialog = true
+                }
             }, label: {
                 Text("Add Medication")
                     .font(.custom("OpenSans-Bold", size: 22))
@@ -99,12 +104,45 @@ struct NewTaskView: View {
                     .hSpacing(.center)
                     .padding(.vertical, 12)
                     .background(Color("SlateBlue"), in: .rect(cornerRadius: 10))
-
             })
             .disabled(taskTitle == "")
+
         })
         .padding(15)
+        .alert("Consent to Store Medication Data", isPresented: $showConsentDialog) {
+            Button("Cancel", role: .cancel) {}
+            Button("I Consent") {
+                consentGiven = true
+                saveMedicationFirebase()
+                saveConsentToFirebase()
+            }
+        } message: {
+            Text("By adding your medication details, you consent to MedPez securely storing this information on our servers. You can delete your data at any time in Settings.")
+        }
     }
+    
+    private func saveConsentToFirebase() {
+        guard let user = Auth.auth().currentUser else {
+            print("User not authenticated")
+            return
+        }
+
+        let db = Firestore.firestore()
+        let userRef = db.collection("users").document(user.uid)
+
+        userRef.setData([
+            "medicationConsentGiven": true,
+            "consentGivenDate": FieldValue.serverTimestamp()
+        ], merge: true) { error in
+            if let error = error {
+                print("❌ Error saving consent: \(error.localizedDescription)")
+            } else {
+                print("✅ Consent saved to Firebase.")
+                consentGiven = true
+            }
+        }
+    }
+
     
     private func saveMedicationFirebase() {
         guard let userId = Auth.auth().currentUser?.uid else {
