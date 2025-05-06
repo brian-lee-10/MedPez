@@ -18,6 +18,8 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
     @Published var receivedData: String = "Waiting for data..."
     @Published var pillCount: Int = 0
     let pillCountCharacteristicUUID = CBUUID(string: "beb5483e-0001-4688-b7f5-ea07361b26a8")
+    @Published var batteryLevel: Int = 0
+    let batteryLevelCharacteristicUUID = CBUUID(string: "beb5483e-0002-4688-b7f5-ea07361b26a8")
 
     override init() {
         super.init()
@@ -32,11 +34,6 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
 
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         isSwitchedOn = central.state == .poweredOn
-//        if isSwitchedOn {
-//            startScanning()
-//        } else {
-//            stopScanning()
-//        }
     }
 
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi RSSI: NSNumber) {
@@ -64,7 +61,7 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
         connectedPeripheralUUID = peripheral.identifier
         connectedPeripheral = peripheral
         peripheral.delegate = self
-        peripheral.discoverServices(nil) // Discover services
+        peripheral.discoverServices(nil) // Discover service
     }
 
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
@@ -91,6 +88,14 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
                 if characteristic.uuid == pillCountCharacteristicUUID {
                     print("✅ Subscribing to pillCountCharacteristicUUID")
                     peripheral.setNotifyValue(true, for: characteristic)
+                    
+                    peripheral.readValue(for: characteristic)
+                }
+                
+                if characteristic.uuid == batteryLevelCharacteristicUUID {
+                    print("✅ Subscribing to Battery UUID")
+                    peripheral.setNotifyValue(true, for: characteristic)
+                    peripheral.readValue(for: characteristic) // trigger initial read
                 }
 
                 // Optionally read once (if needed)
@@ -122,6 +127,19 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
                     print("❌ Could not convert to Int")
                 }
             }
+            
+            if characteristic.uuid == batteryLevelCharacteristicUUID {
+                print("✅ Matched batteryLevelCharacteristicUUID")
+
+                if let batteryString = String(data: characteristic.value ?? Data(), encoding: .utf8),
+                   let batteryPercent = Int(batteryString.trimmingCharacters(in: .whitespacesAndNewlines)) {
+                    print("🔋 Battery level received: \(batteryPercent)%")
+                    DispatchQueue.main.async {
+                        self.batteryLevel = batteryPercent
+                    }
+                }
+            }
+
         }
     }
     
@@ -163,6 +181,27 @@ class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CB
                 } else if char.uuid == completedUUID {
                     let value = "\(completed)".data(using: .utf8)!
                     peripheral.writeValue(value, for: char, type: .withResponse)
+                }
+            }
+        }
+    }
+
+    func sendAlarmTrigger() {
+        guard let peripheral = connectedPeripheral else { return }
+
+        let alarmUUID = CBUUID(string: "beb5483e-0006-4688-b7f5-ea07361b26a8")
+
+        if let services = peripheral.services {
+            for service in services {
+                if let characteristics = service.characteristics {
+                    for characteristic in characteristics {
+                        if characteristic.uuid == alarmUUID {
+                            let data = "true".data(using: .utf8)!
+                            peripheral.writeValue(data, for: characteristic, type: .withResponse)
+                            print("🚨 Alarm trigger sent via BLE")
+                            return
+                        }
+                    }
                 }
             }
         }
