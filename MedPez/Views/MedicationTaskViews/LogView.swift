@@ -61,6 +61,7 @@ struct LogView: View {
                 }
             }
         })
+    
         .sheet(isPresented: $createNewTask, content: {
             NewTaskView()
                 .presentationDetents([.height(430)])
