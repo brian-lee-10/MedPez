@@ -29,6 +29,21 @@ struct BluetoothView: View {
                         .font(.custom("OpenSans-Bold", size: 34))
                         .padding(.horizontal)
                     Spacer()
+                    if bluetoothManager.connectedPeripheralUUID != nil {
+                        HStack(spacing: 6) {
+                            Text("\(bluetoothManager.batteryLevel)%")
+                                .font(.custom("OpenSans-Bold", size: 20))
+                                .foregroundColor(bluetoothManager.batteryLevel < 20 ? .red : .black)
+
+                            Image(systemName: batteryIconName(bluetoothManager.batteryLevel))
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 28, height: 16)
+                                .foregroundColor(bluetoothManager.batteryLevel < 20 ? .red : .black)
+                        }
+                        .padding(.top, 2)
+                        .padding(.horizontal)
+                    }
                 }
                 
                 // Device Heading
@@ -59,13 +74,6 @@ struct BluetoothView: View {
                     }
                     .padding(.horizontal)
                     
-                    HStack {
-                        Text("Smart Pill Dispenser")
-                            .font(.custom("OpenSans-Regular", size: 18))
-                            .foregroundColor(.gray)
-                            .padding(.horizontal)
-                        Spacer()
-                    }
                 }
                 
                 /// Device Image Placeholder
@@ -78,19 +86,6 @@ struct BluetoothView: View {
                 
                 /// Info Grid
                 HStack(spacing: 12) {
-                    // Battery
-//                    VStack (spacing: 10) {
-//                        Text("Battery")
-//                            .font(.custom("OpenSans-Regular", size: 14))
-//                        Image(systemName: "battery.100")
-//                        Text("100%")
-//                            .font(.custom("OpenSans-Bold", size: 20))
-//                    }
-//                    .frame(maxWidth: .infinity)
-//                    .padding()
-//                    .background(Color(.BG))
-//                    .cornerRadius(12)
-                    
                     // Pills Left
                     VStack(spacing: 10) {
                         Text("In MedPez")
@@ -198,6 +193,7 @@ struct BluetoothView: View {
                     }
                 }
             }
+            .padding(.top, -40)
         }
         .onAppear {
             bluetoothManager.initializeCentralManager()
@@ -205,6 +201,7 @@ struct BluetoothView: View {
             if bluetoothManager.isSwitchedOn {
                 bluetoothManager.startScanning()
             }
+            
             // Check if Notifications are allowed
             UNUserNotificationCenter.current().getNotificationSettings { settings in
                 DispatchQueue.main.async {
@@ -214,7 +211,16 @@ struct BluetoothView: View {
                     }
                 }
             }
-
+        }
+    }
+    func batteryIconName(_ percent: Int) -> String {
+        switch percent {
+        case 80...100: return "battery.100"
+        case 60..<80: return "battery.75"
+        case 40..<60: return "battery.50"
+        case 20..<40: return "battery.25"
+        case 0..<20: return "battery.0"
+        default: return "battery.0" // default or unknown
         }
     }
 }
