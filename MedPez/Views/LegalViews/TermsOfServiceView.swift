@@ -41,7 +41,7 @@ struct TermsOfServiceView: View {
 
                     Text("6. Limitations of Liability")
                         .bold()
-                    Text("We are not liable for any loss, harm, or injury resulting from the use of this app, including but not limited to missed medications, incorrect entries, or device errors.")
+                    Text("MedPez and its developers shall not be liable for any direct, indirect, incidental, or consequential damages arising from the use of the app, including but not limited to missed medications, incorrect entries, or hardware failures.")
 
                     Text("7. Privacy Policy")
                         .bold()
@@ -57,7 +57,7 @@ struct TermsOfServiceView: View {
 
                     Text("10. Changes to Terms")
                         .bold()
-                    Text("We may update these Terms of Service at any time. Continued use of the app after changes indicates acceptance of the revised terms.")
+                    Text("By continuing to use the app after any updates, you agree to be bound by the revised Terms of Service.")
 
                     Text("11. Contact")
                         .bold()
