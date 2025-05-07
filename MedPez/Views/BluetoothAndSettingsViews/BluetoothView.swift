@@ -148,7 +148,7 @@ struct BluetoothView: View {
                         HStack {
                             Image(systemName: "bluetooth")
                             Text("Disconnect")
-                                .font(.custom("OpenSans-Bold", size: 16))
+                                .font(.custom("OpenSans-Bold", size: 22))
                         }
                         .foregroundColor(.white)
                         .padding()
@@ -176,7 +176,7 @@ struct BluetoothView: View {
                         HStack {
                             // Image(systemName: "antenna.radiowaves.left.and.right")
                             Text("Connect")
-                                .font(.custom("OpenSans-Bold", size: 16))
+                                .font(.custom("OpenSans-Bold", size: 22))
                         }
                         .foregroundColor(.white)
                         .padding()
