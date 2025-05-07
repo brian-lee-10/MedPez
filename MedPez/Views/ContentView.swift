@@ -361,7 +361,7 @@ struct MyCalendarCard: View {
         Button(action: { showCalendar = true }) {
             VStack(spacing: 6) {
                 Text("My Calendar")
-                    .font(.custom("OpenSans-Regular", size: 22))
+                    .font(.custom("OpenSans-Regular", size: 24))
                     .foregroundColor(.white)
                 Spacer()
                 
@@ -403,12 +403,15 @@ struct MyDeviceCard: View {
                 Text("My Device")
                     .font(.custom("OpenSans-Regular", size: 24))
                     .foregroundColor(.black)
-                Spacer()
-                Image("device_image")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 150, height: 200)
-                    .foregroundColor(.black)
+                Spacer(minLength: 0)
+                ZStack {
+                    Image("device_image")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 220)
+                        .offset(y: 30)
+                }
+                .frame(height: 140)
             }
             .padding()
             .frame(maxWidth: .infinity)
